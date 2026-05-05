@@ -1,0 +1,21 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/inventory/inventory",
+    "pages/reminder/reminder",
+    "pages/bills/bills",
+    "pages/edit/edit",
+    "pages/detail/detail",
+    "pages/bill/bill",
+    "pages/cycle/cycle",
+    "pages/profile/profile"
+  ],
+  "window": {
+    "navigationBarTitleText": "家庭库存管理",
+    "navigationBarBackgroundColor": "#fbfaf7",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#fbfaf7"
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}

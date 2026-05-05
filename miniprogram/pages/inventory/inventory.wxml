@@ -1,0 +1,25 @@
+<view class="page list-page">
+  <view class="page-title">库存</view>
+  <scroll-view scroll-y class="list-scroll">
+    <view class="summary-card panel" wx:for="{{items}}" wx:key="id" data-id="{{item.id}}" bindtap="goDetail">
+      <image class="summary-thumb" src="{{item.imageUrl}}" mode="aspectFit"></image>
+      <view class="summary-info">
+        <view class="summary-head">
+          <text class="summary-name">{{item.name}}</text>
+          <text class="summary-pill" style="background-color: {{item.locationColor}};">{{item.displayLocation}}</text>
+        </view>
+        <text>剩余库存: {{item.stock}}{{item.unit}}</text>
+        <text>周期: {{item.cycleDays}}天</text>
+        <text class="danger">预计购买: {{item.nextSuggestedText}}</text>
+      </view>
+    </view>
+  </scroll-view>
+
+  <view class="bottom-tabbar">
+    <view class="tab-item" bindtap="goHome"><image class="tab-img" src="/assets/tab-home.png" mode="aspectFit"></image><text>首页</text></view>
+    <view class="tab-item active"><image class="tab-img" src="/assets/tab-inventory-active.png" mode="aspectFit"></image><text>库存</text></view>
+    <view class="tab-item" bindtap="goReminder"><image class="tab-img" src="/assets/tab-reminder.png" mode="aspectFit"></image><text>提醒</text></view>
+    <view class="tab-item" bindtap="goBills"><image class="tab-img" src="/assets/tab-bill.png" mode="aspectFit"></image><text>账单</text></view>
+    <view class="tab-item" bindtap="goProfile"><image class="tab-img" src="/assets/tab-profile.png" mode="aspectFit"></image><text>我的</text></view>
+  </view>
+</view>

@@ -1,0 +1,62 @@
+.list-page {
+  padding-bottom: 148rpx;
+  background: #fffdf9;
+}
+
+.page-title {
+  font-size: 34rpx;
+  font-weight: 800;
+  margin-bottom: 20rpx;
+}
+
+.list-scroll {
+  height: calc(100vh - 190rpx);
+}
+
+.summary-card {
+  min-height: 168rpx;
+  margin-bottom: 18rpx;
+  padding: 16rpx;
+  display: flex;
+  gap: 18rpx;
+  align-items: center;
+}
+
+.summary-thumb {
+  width: 132rpx;
+  height: 132rpx;
+  flex-shrink: 0;
+}
+
+.summary-info {
+  flex: 1;
+  display: grid;
+  gap: 8rpx;
+  color: #666666;
+  font-size: 24rpx;
+}
+
+.summary-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12rpx;
+}
+
+.summary-name {
+  color: #222222;
+  font-size: 30rpx;
+  font-weight: 800;
+}
+
+.summary-pill {
+  color: #ffffff;
+  border-radius: 999rpx;
+  padding: 7rpx 18rpx;
+  font-size: 21rpx;
+}
+
+.danger {
+  color: #ff7634;
+  font-weight: 700;
+}

@@ -1,0 +1,59 @@
+<view class="page detail-page" wx:if="{{item}}">
+  <view class="page-header">
+    <view class="back-icon" bindtap="goBack">‹</view>
+    <text>物品详细信息</text>
+  </view>
+
+  <view class="detail-shell" style="border-color: {{item.locationColor}};">
+    <view class="image-box" bindtap="chooseImage">
+      <image wx:if="{{item.imageUrl}}" src="{{item.imageUrl}}" mode="aspectFit"></image>
+      <view wx:else class="image-placeholder">拍照/上传图片</view>
+      <view class="upload-hint">⌘ 拍照/上传图片</view>
+    </view>
+
+    <view class="row">
+      <text class="label">物品名称:</text>
+      <input class="value edit-input" value="{{item.name}}" bindinput="onNameInput" placeholder="请输入物品名称" />
+    </view>
+
+    <picker range="{{locations}}" range-key="name" value="{{locationIndex}}" bindchange="onLocationChange">
+      <view class="row location-row">
+        <text class="label">所在位置:</text>
+        <view class="location-value" style="background-color: {{item.locationColor}};">{{item.locationName}}</view>
+      </view>
+    </picker>
+
+    <view class="stock-row">
+      <text class="label">剩余库存:</text>
+      <view class="stepper">
+        <button bindtap="minusStock">-</button>
+        <text class="stock-num">{{item.stock}}</text>
+        <text>{{item.unit}}</text>
+        <button class="plus" bindtap="goBill">+</button>
+      </view>
+    </view>
+    <view class="sub-tip">点击“+”添加库存并记录到账单</view>
+
+    <view class="row arrow" bindtap="goCycle">
+      <text class="label">周期:</text>
+      <text class="value">{{item.cycleDays}}天</text>
+    </view>
+    <view class="row">
+      <text class="label">预计购买时间:</text>
+      <text class="value danger">{{item.nextSuggestedText}}</text>
+    </view>
+    <view class="row">
+      <text class="label">价格区间:</text>
+      <text class="value">{{item.priceRange}}</text>
+    </view>
+    <view class="row column">
+      <text class="label">具体位置:</text>
+      <input class="detail-input" value="{{detailText}}" bindinput="onDetailInput" placeholder="例如：衣柜 > 最上层 > 第一个箱子" />
+    </view>
+
+    <view class="action-row">
+      <button bindtap="goBill" class="outline-action">▤ 账单</button>
+      <button bindtap="goCycle" class="outline-action blue">▣ 周期</button>
+    </view>
+  </view>
+</view>

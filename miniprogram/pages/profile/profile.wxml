@@ -1,0 +1,62 @@
+<view class="page profile-page">
+  <view class="profile-head">
+    <view class="avatar" bindtap="chooseAvatar">
+      <image wx:if="{{house.avatarUrl}}" src="{{house.avatarUrl}}" mode="aspectFill"></image>
+      <block wx:else>
+        <view class="camera">◉</view>
+        <text class="avatar-tip">点击上传头像</text>
+      </block>
+    </view>
+  </view>
+
+  <view class="name-card panel">
+    <view class="name-row">
+      <view>
+        <text class="name-label">房子名称: </text>
+        <input value="{{house.name}}" bindinput="onNameInput" placeholder="例如：望月小家" />
+        <text class="name-tip">可修改房子名称</text>
+      </view>
+      <text class="edit-icon">✎</text>
+    </view>
+  </view>
+
+  <view class="function-grid">
+    <view
+      wx:for="{{functions}}"
+      wx:key="name"
+      data-name="{{item.name}}"
+      bindtap="onFunctionTap"
+      class="function-cell panel"
+    >
+      <view class="function-icon {{item.color}}">{{item.icon}}</view>
+      <text>{{item.name}}</text>
+    </view>
+  </view>
+
+  <view class="tip-panel">也可以在主页面长按分类/位置格子快速编辑</view>
+
+  <button class="switch-button green-button" bindtap="switchHouse">▦ 切换其他房子</button>
+
+  <view class="bottom-tabbar">
+    <view class="tab-item" bindtap="goHome">
+      <image class="tab-img" src="/assets/tab-home.png" mode="aspectFit"></image>
+      <text>首页</text>
+    </view>
+    <view class="tab-item" bindtap="goInventory">
+      <image class="tab-img" src="/assets/tab-inventory.png" mode="aspectFit"></image>
+      <text>库存</text>
+    </view>
+    <view class="tab-item" bindtap="goReminder">
+      <image class="tab-img" src="/assets/tab-reminder.png" mode="aspectFit"></image>
+      <text>提醒</text>
+    </view>
+    <view class="tab-item" bindtap="goBills">
+      <image class="tab-img" src="/assets/tab-bill.png" mode="aspectFit"></image>
+      <text>账单</text>
+    </view>
+    <view class="tab-item active" bindtap="goProfile">
+      <image class="tab-img" src="/assets/tab-profile-active.png" mode="aspectFit"></image>
+      <text>我的</text>
+    </view>
+  </view>
+</view>

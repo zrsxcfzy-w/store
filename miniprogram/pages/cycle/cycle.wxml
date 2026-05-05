@@ -1,0 +1,35 @@
+<view class="page cycle-page" wx:if="{{item}}">
+  <view class="page-header">
+    <view class="back-icon" bindtap="goBack">‹</view>
+    <text>{{item.name}}</text>
+  </view>
+
+  <view class="cycle-panel">
+    <view class="field-label">上上次购买时间</view>
+    <view class="readonly-field">{{previousPurchaseDateText}}</view>
+
+    <view class="field-label">上次购买时间</view>
+    <view class="readonly-field">{{lastPurchaseDateText}}</view>
+
+    <view class="field-label">购买周期(天)</view>
+    <view class="readonly-field">{{item.cycleDays}}</view>
+
+    <view class="field-label">下一次建议购买日期</view>
+    <view class="readonly-field">{{nextSuggestedDateText}}</view>
+
+    <view class="note">按购买周期 + 平台送达时间估算</view>
+
+    <view class="delivery-title">平台送达时间（默认值）</view>
+    <view class="delivery-grid">
+      <view class="delivery-chip jd">京东<text>2天</text></view>
+      <view class="delivery-chip tb">淘宝<text>3天</text></view>
+      <view class="delivery-chip pdd">拼多多<text>3天</text></view>
+      <view class="delivery-chip offline">线下<text>0天</text></view>
+    </view>
+
+    <view class="button-row">
+      <button bindtap="confirm" class="cancel">取消</button>
+      <button bindtap="confirm" class="confirm green-button">确认设置</button>
+    </view>
+  </view>
+</view>

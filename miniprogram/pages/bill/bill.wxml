@@ -1,0 +1,56 @@
+<view class="page bill-page" wx:if="{{item}}">
+  <view class="page-header">
+    <view class="back-icon" bindtap="goBack">‹</view>
+    <text>{{item.name}}的购买记录</text>
+  </view>
+
+  <view class="sort-row">
+    <button class="{{sortMode === 'priceAsc' ? 'active' : ''}}" data-mode="priceAsc" bindtap="setSort">价格从低到高</button>
+    <button class="{{sortMode === 'priceDesc' ? 'active' : ''}}" data-mode="priceDesc" bindtap="setSort">价格从高到低</button>
+    <button class="{{sortMode === 'timeDesc' ? 'active' : ''}}" data-mode="timeDesc" bindtap="setSort">时间由近到远</button>
+  </view>
+
+  <view class="bill-head">
+    <text>时间</text>
+    <text>平台</text>
+    <text>价格(元)</text>
+    <text>数量</text>
+  </view>
+
+  <view class="record panel" wx:for="{{sortedBills}}" wx:for-item="bill" wx:key="id">
+    <view class="record-date">{{bill.displayDate}}</view>
+    <view class="platform">
+      <text class="platform-badge">{{bill.platformMark}}</text>
+      <view>
+        <text class="platform-name">{{bill.platform}}</text>
+        <text class="delivery-tag">{{bill.deliveryLabel}}</text>
+      </view>
+    </view>
+    <view class="price">{{bill.price}}</view>
+    <view class="quantity">{{bill.quantity}}{{unit}}</view>
+  </view>
+
+  <view class="form panel">
+    <picker mode="date" value="{{form.date}}" bindchange="onDateChange">
+      <view class="field">
+        <text>时间</text>
+        <text>{{formDateText}}</text>
+      </view>
+    </picker>
+    <picker range="{{platforms}}" value="{{platformIndex}}" bindchange="onPlatformChange">
+      <view class="field">
+        <text>平台</text>
+        <text>{{form.platform}}</text>
+      </view>
+    </picker>
+    <view class="field">
+      <text>价格(元)</text>
+      <input type="digit" placeholder="0.00" value="{{form.price}}" bindinput="onPriceInput" />
+    </view>
+    <view class="field">
+      <text>数量({{item.unit}})</text>
+      <input type="number" placeholder="1" value="{{form.quantity}}" bindinput="onQuantityInput" />
+    </view>
+    <button class="submit green-button" bindtap="submitBill">添加购买记录</button>
+  </view>
+</view>

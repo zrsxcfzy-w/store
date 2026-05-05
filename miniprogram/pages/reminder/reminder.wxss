@@ -1,0 +1,16 @@
+@import "../inventory/inventory.wxss";
+
+.reminder-panel {
+  margin-bottom: 18rpx;
+  padding: 22rpx;
+  color: #555555;
+  line-height: 1.7;
+  white-space: pre-line;
+}
+
+.copy-button {
+  margin-top: 18rpx;
+  height: 72rpx;
+  line-height: 72rpx;
+  border-radius: 12rpx;
+}

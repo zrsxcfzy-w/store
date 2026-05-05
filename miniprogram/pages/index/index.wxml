@@ -1,0 +1,122 @@
+<view class="page home-page">
+  <view class="topbar">
+    <view class="house-title">
+      <text class="house-icon">⌂</text>
+      <view class="house-copy">
+        <text class="house-name">关于 {{house.name}}</text>
+        <view class="top-actions">
+          <button class="tool-button" bindtap="openManual"><text class="mini-icon">▣</text> 查看说明书</button>
+          <button class="tool-button" bindtap="exportList"><text class="mini-icon">⇩</text> 导出清单</button>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="search-bar">
+    <text class="search-icon">⌕</text>
+    <input value="{{searchKeyword}}" bindinput="onSearchInput" placeholder="搜索物品名称" />
+  </view>
+
+  <view class="layout">
+    <view class="location-row">
+      <view class="location-cell item-cell {{activeLocationId || activeCategoryId ? '' : 'active'}}" bindtap="clearFilters">物品</view>
+      <view
+        wx:for="{{house.locations}}"
+        wx:key="id"
+        data-id="{{item.id}}"
+        data-name="{{item.name}}"
+        bindtap="onLocationTap"
+        bindlongpress="onLocationLongPress"
+        class="location-cell color-cell {{activeLocationId === item.id ? 'selected' : ''}}"
+        style="background-color: {{item.color}};"
+      >
+        {{item.name}}
+      </view>
+    </view>
+
+    <view class="content-row">
+      <view class="category-column">
+        <view
+          wx:for="{{house.categories}}"
+          wx:key="id"
+          data-id="{{item.id}}"
+          data-name="{{item.name}}"
+          bindtap="onCategoryTap"
+          bindlongpress="onCategoryLongPress"
+          class="category-cell {{activeCategoryId === item.id ? 'selected' : ''}}"
+        >
+          {{item.name}}
+        </view>
+      </view>
+
+      <scroll-view scroll-y class="item-list">
+        <view
+          wx:for="{{filteredItems}}"
+          wx:key="id"
+          data-id="{{item.id}}"
+          bindtap="goDetail"
+          bindlongpress="onItemLongPress"
+          class="item-card panel"
+        >
+          <image class="item-thumb" src="{{item.imageUrl}}" mode="aspectFit"></image>
+          <view class="item-info">
+            <view class="card-head">
+              <text class="location-pill" style="background-color: {{item.locationColor}};">{{item.displayLocation}}</text>
+            </view>
+            <view class="card-grid">
+              <text class="item-name">{{item.name}}</text>
+              <text>剩余库存: {{item.stock}}{{item.unit}}</text>
+              <text>周期: {{item.cycleDays}}天</text>
+              <text class="danger">预计购买: {{item.nextSuggestedText}}</text>
+            </view>
+          </view>
+        </view>
+      </scroll-view>
+    </view>
+  </view>
+
+  <view wx:if="{{guideVisible}}" class="guide-bubble location-guide">长按格子可编辑名称</view>
+  <view wx:if="{{guideVisible}}" class="guide-bubble item-guide">长按物品可删除</view>
+
+  <view class="bottom-tabbar">
+    <view class="tab-item active" bindtap="goHome">
+      <image class="tab-img" src="/assets/tab-home-active.png" mode="aspectFit"></image>
+      <text>首页</text>
+    </view>
+    <view class="tab-item" bindtap="goInventory">
+      <image class="tab-img" src="/assets/tab-inventory.png" mode="aspectFit"></image>
+      <text>库存</text>
+    </view>
+    <view class="tab-item" bindtap="goReminder">
+      <image class="tab-img" src="/assets/tab-reminder.png" mode="aspectFit"></image>
+      <text>提醒</text>
+    </view>
+    <view class="tab-item" bindtap="goBills">
+      <image class="tab-img" src="/assets/tab-bill.png" mode="aspectFit"></image>
+      <text>账单</text>
+    </view>
+    <view class="tab-item" bindtap="goProfile">
+      <image class="tab-img" src="/assets/tab-profile.png" mode="aspectFit"></image>
+      <text>我的</text>
+    </view>
+  </view>
+  <button class="add-button" bindtap="goEdit">+</button>
+
+  <view wx:if="{{manualVisible}}" class="modal-mask">
+    <view class="manual-panel">
+      <view class="manual-title">家庭库存管理使用说明</view>
+      <scroll-view scroll-y class="manual-body">
+        <view wx:for="{{manualText}}" wx:key="*this" class="manual-line">{{item}}</view>
+      </scroll-view>
+      <button class="confirm-button" bindtap="closeManual">我知道了</button>
+    </view>
+  </view>
+
+  <view wx:if="{{guideVisible}}" class="guide-mask">
+    <view class="guide-card">
+      <view class="guide-step">新手教程 {{guideStepText}} / 9</view>
+      <view class="guide-text">{{guideText}}</view>
+      <button class="confirm-button green-button" bindtap="nextGuide">下一步</button>
+    </view>
+  </view>
+</view>

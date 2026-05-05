@@ -1,0 +1,112 @@
+page {
+  background: #fffdf9;
+  color: #202020;
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-size: 28rpx;
+}
+
+button {
+  border-radius: 18rpx;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+button::after {
+  border: 0;
+}
+
+.page {
+  min-height: 100vh;
+  box-sizing: border-box;
+  padding: 22rpx 24rpx;
+}
+
+.muted {
+  color: #989898;
+}
+
+.panel {
+  background: #ffffff;
+  border-radius: 18rpx;
+  border: 1rpx solid #ececec;
+  box-shadow: 0 8rpx 20rpx rgba(45, 37, 28, 0.07);
+}
+
+.pill {
+  min-height: 48rpx;
+  padding: 0 22rpx;
+  border-radius: 999rpx;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.page-header {
+  height: 66rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  font-size: 28rpx;
+  font-weight: 700;
+  color: #191919;
+}
+
+.back-icon {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 70rpx;
+  height: 66rpx;
+  display: flex;
+  align-items: center;
+  font-size: 42rpx;
+  color: #111111;
+}
+
+.green-button {
+  background: linear-gradient(180deg, #70c884 0%, #5fbd78 100%);
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.bottom-tabbar {
+  position: fixed;
+  left: 22rpx;
+  right: 22rpx;
+  bottom: 20rpx;
+  height: 108rpx;
+  background: rgba(255, 255, 255, 0.96);
+  border: 1rpx solid #eeeeee;
+  border-radius: 22rpx;
+  box-shadow: 0 8rpx 22rpx rgba(45, 37, 28, 0.08);
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  z-index: 10;
+}
+
+.tab-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4rpx;
+  color: #9b9b9b;
+  font-size: 21rpx;
+}
+
+.tab-icon {
+  font-size: 32rpx;
+  line-height: 1;
+}
+
+.tab-img {
+  width: 40rpx;
+  height: 40rpx;
+}
+
+.tab-item.active {
+  color: #62bd7b;
+  font-weight: 700;
+}

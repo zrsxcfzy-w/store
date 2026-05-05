@@ -1,0 +1,16 @@
+@import "../bill/bill.wxss";
+
+.bills-page {
+  padding-bottom: 148rpx;
+  background: #fffdf9;
+}
+
+.page-title {
+  font-size: 34rpx;
+  font-weight: 800;
+  margin-bottom: 20rpx;
+}
+
+.bills-scroll {
+  height: calc(100vh - 260rpx);
+}

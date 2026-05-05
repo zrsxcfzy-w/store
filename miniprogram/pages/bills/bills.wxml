@@ -1,0 +1,31 @@
+<view class="page bills-page">
+  <view class="page-title">账单</view>
+  <view class="bill-head">
+    <text>时间</text>
+    <text>物品</text>
+    <text>价格(元)</text>
+    <text>数量</text>
+  </view>
+  <scroll-view scroll-y class="bills-scroll">
+    <view class="record panel" wx:for="{{bills}}" wx:key="id">
+      <view class="record-date">{{item.displayDate}}</view>
+      <view class="platform">
+        <text class="platform-badge">{{item.itemMark}}</text>
+        <view>
+          <text class="platform-name">{{item.itemName}}</text>
+          <text class="delivery-tag">{{item.platform}}</text>
+        </view>
+      </view>
+      <view class="price">{{item.price}}</view>
+      <view class="quantity">{{item.quantity}}{{item.unit}}</view>
+    </view>
+  </scroll-view>
+
+  <view class="bottom-tabbar">
+    <view class="tab-item" bindtap="goHome"><image class="tab-img" src="/assets/tab-home.png" mode="aspectFit"></image><text>首页</text></view>
+    <view class="tab-item" bindtap="goInventory"><image class="tab-img" src="/assets/tab-inventory.png" mode="aspectFit"></image><text>库存</text></view>
+    <view class="tab-item" bindtap="goReminder"><image class="tab-img" src="/assets/tab-reminder.png" mode="aspectFit"></image><text>提醒</text></view>
+    <view class="tab-item active"><image class="tab-img" src="/assets/tab-bill-active.png" mode="aspectFit"></image><text>账单</text></view>
+    <view class="tab-item" bindtap="goProfile"><image class="tab-img" src="/assets/tab-profile.png" mode="aspectFit"></image><text>我的</text></view>
+  </view>
+</view>

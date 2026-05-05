@@ -1,0 +1,157 @@
+.profile-page {
+  padding-bottom: 146rpx;
+  background: #fffdf9;
+}
+
+.profile-head {
+  padding-top: 54rpx;
+  display: flex;
+  justify-content: center;
+}
+
+.avatar {
+  width: 170rpx;
+  height: 170rpx;
+  border-radius: 50%;
+  border: 2rpx solid #97d5a7;
+  background: #fffefb;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #a5a5a5;
+  overflow: hidden;
+}
+
+.avatar image {
+  width: 100%;
+  height: 100%;
+}
+
+.camera {
+  font-size: 58rpx;
+  color: #cfcfcf;
+}
+
+.avatar-tip {
+  margin-top: 8rpx;
+  font-size: 20rpx;
+  color: #999999;
+}
+
+.name-card {
+  margin-top: 42rpx;
+  padding: 26rpx 28rpx;
+  border-radius: 18rpx;
+}
+
+.name-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20rpx;
+}
+
+.name-row > view {
+  flex: 1;
+  min-width: 0;
+}
+
+.name-label {
+  font-size: 28rpx;
+  font-weight: 700;
+}
+
+.name-row input {
+  display: inline-block;
+  width: 260rpx;
+  height: 44rpx;
+  font-weight: 700;
+  color: #333333;
+}
+
+.name-tip {
+  display: block;
+  margin-top: 10rpx;
+  color: #9a9a9a;
+  font-size: 21rpx;
+}
+
+.edit-icon {
+  color: #b5b5b5;
+  font-size: 34rpx;
+}
+
+.function-grid {
+  margin-top: 26rpx;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20rpx;
+}
+
+.function-cell {
+  height: 140rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12rpx;
+  color: #333333;
+  font-weight: 700;
+}
+
+.function-icon {
+  width: 64rpx;
+  height: 64rpx;
+  border-radius: 50%;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 34rpx;
+  font-weight: 800;
+}
+
+.function-icon.green {
+  background: #78c78a;
+}
+
+.function-icon.blue {
+  background: #73bde8;
+}
+
+.function-icon.orange {
+  background: #ff9f57;
+}
+
+.function-icon.purple {
+  background: #b894df;
+}
+
+.function-icon.red {
+  background: #f07f7f;
+}
+
+.tip-panel {
+  margin: 24rpx 0 0;
+  min-height: 60rpx;
+  padding: 0 22rpx;
+  border-radius: 14rpx;
+  border: 2rpx solid #7ecf91;
+  background: #ffffff;
+  color: #48a765;
+  display: flex;
+  align-items: center;
+  font-weight: 700;
+  font-size: 22rpx;
+  justify-content: center;
+}
+
+.switch-button {
+  margin-top: 28rpx;
+  width: 100%;
+  height: 78rpx;
+  line-height: 78rpx;
+  border-radius: 14rpx;
+  font-size: 30rpx;
+}
