@@ -1,42 +1,11 @@
-# Dependencies
-node_modules/
-miniprogram_npm/
+# ∫ˆ¬‘ SSH √‹‘ø
+*.pub
+id_ed25519
+AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2l9GKJl
+AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2l9GKJl.pub
 
-# Build and generated output
-dist/
-build/
-out/
-coverage/
-.nyc_output/
-
-# WeChat DevTools local/private files
-project.private.config.json
-.wept/
-.idea/
-.vscode/
-
-# Local browser/test profiles
-chrome-profile/
+# ∫ˆ¬‘±æµÿª∫¥Ê°¢‘§¿¿°¢√Ù∏–≈‰÷√
 edge-profile/
-
-# Logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-
-# Environment and secrets
-.env
-.env.*
-!.env.example
-
-# Temporary preview artifacts
 preview.html
 preview.png
-
-# OS/editor noise
-.DS_Store
-Thumbs.db
-*.swp
-*.swo
+project.private.config.json
