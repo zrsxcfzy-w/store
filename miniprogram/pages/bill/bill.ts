@@ -26,6 +26,13 @@ Page({
   },
 
   onShow() {
+    const today = todayIso();
+    if (compareIsoDate(this.data.form.date, today) > 0) {
+      this.setData({
+        "form.date": today,
+        formDateText: formatChineseDate(today)
+      });
+    }
     this.refresh();
   },
 
@@ -65,12 +72,13 @@ Page({
 
   onDateChange(event: any) {
     const selectedDate = event.detail.value;
-    if (compareIsoDate(selectedDate, todayIso()) > 0) {
+    const today = todayIso();
+    if (compareIsoDate(selectedDate, today) > 0) {
       this.setData({
-        "form.date": todayIso(),
-        formDateText: formatChineseDate(todayIso())
+        "form.date": today,
+        formDateText: formatChineseDate(today)
       });
-      wx.showToast({ title: "当前输入有误", icon: "none" });
+      wx.showToast({ title: "当前填写的时间有误", icon: "none" });
       return;
     }
     this.setData({

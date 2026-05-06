@@ -1,0 +1,24 @@
+{
+  "name": "store_wechatapp",
+  "version": "1.0.0",
+  "description": "这是第一版微信原生小程序代码，采用：",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zrsxcfzy-w/store.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/zrsxcfzy-w/store/issues"
+  },
+  "homepage": "https://github.com/zrsxcfzy-w/store#readme",
+  "devDependencies": {
+    "typescript": "^6.0.3"
+  }
+}

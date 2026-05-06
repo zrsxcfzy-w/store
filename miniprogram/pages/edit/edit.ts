@@ -1,8 +1,26 @@
 import { House, InventoryItem, addOrUpdateItem, currentHouse, getItem } from "../../services/store";
 
+function splitDetailText(text: string): string[] {
+  return text
+    .split(/[>＞,，/]/)
+    .map((part: string) => part.trim())
+    .filter(Boolean);
+}
+
+function formatDetailText(locationName: string, detail: string[] = []): string {
+  return [locationName, ...detail].filter(Boolean).join(" > ");
+}
+
+function parseDetailText(text: string, locationName: string): string[] {
+  const parts = splitDetailText(text);
+  if (parts[0] === locationName) return parts.slice(1);
+  return parts;
+}
+
 Page({
   data: {
     itemId: "",
+    initialized: false,
     house: {} as House,
     locationIndex: 0,
     categoryIndex: 0,
@@ -23,23 +41,26 @@ Page({
   },
 
   onShow() {
+    if (this.data.initialized) return;
     const house = currentHouse();
     const item = this.data.itemId ? getItem(this.data.itemId) : undefined;
     const locationIndex = item ? Math.max(0, house.locations.findIndex((tag) => tag.id === item.locationId)) : 0;
     const categoryIndex = item ? Math.max(0, house.categories.findIndex((tag) => tag.id === item.categoryId)) : 0;
     const unitIndex = item ? Math.max(0, house.units.findIndex((unit) => unit === item.unit)) : 0;
+    const locationName = house.locations[locationIndex]?.name || "";
     this.setData({
+      initialized: true,
       house,
       locationIndex,
       categoryIndex,
       unitIndex,
-      locationName: house.locations[locationIndex]?.name || "",
+      locationName,
       categoryName: house.categories[categoryIndex]?.name || "",
       unitName: house.units[unitIndex] || "",
       form: {
         name: item?.name || "",
         imageUrl: item?.imageUrl || "",
-        locationDetailText: item?.locationDetail?.join(" > ") || "",
+        locationDetailText: formatDetailText(locationName, item?.locationDetail || []),
         manualConsumption: item?.manualConsumption || 0
       }
     });
@@ -62,9 +83,12 @@ Page({
 
   onLocationChange(event: any) {
     const locationIndex = Number(event.detail.value);
+    const locationName = this.data.house.locations[locationIndex].name;
+    const detail = parseDetailText(this.data.form.locationDetailText, this.data.locationName);
     this.setData({
       locationIndex,
-      locationName: this.data.house.locations[locationIndex].name
+      locationName,
+      "form.locationDetailText": formatDetailText(locationName, detail)
     });
   },
 
@@ -103,10 +127,7 @@ Page({
       locationId: house.locations[this.data.locationIndex].id,
       categoryId: house.categories[this.data.categoryIndex].id,
       unit: house.units[this.data.unitIndex],
-      locationDetail: this.data.form.locationDetailText
-        .split(/[>＞,，/]/)
-        .map((part: string) => part.trim())
-        .filter(Boolean),
+      locationDetail: parseDetailText(this.data.form.locationDetailText, this.data.locationName),
       manualConsumption: existing?.manualConsumption || 0,
       bills: existing?.bills || []
     };

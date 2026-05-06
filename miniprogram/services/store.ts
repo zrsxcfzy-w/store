@@ -350,9 +350,7 @@ export function exportShoppingList(): string {
     .filter((item) => item.stock <= 2 || item.nextSuggestedText === "已到期" || daysBetween(todayIso(), item.nextSuggestedDate) <= 5)
     .sort(sortItems);
   if (!list.length) return "当前没有需要购买的物品";
-  return list
-    .map((item, index) => `(${index + 1}) ${item.name} 剩余库存: ${item.stock} 预计购买时间: ${item.nextSuggestedText}`)
-    .join("\n");
+  return `当前需要购买${list.length}件物品`;
 }
 
 export function reminderListText(): string {
