@@ -2,13 +2,22 @@ import { BillRecord, SortMode, addBill, formatBillDate, getItem } from "../../se
 import { DeliveryPlatform, compareIsoDate, formatChineseDate, todayIso } from "../../utils/date";
 
 const platforms: DeliveryPlatform[] = ["京东", "淘宝", "拼多多", "线下超市", "其他平台"];
+const platformColors: Record<DeliveryPlatform, string> = {
+  "京东": "#e1251b",
+  "淘宝": "#ff5000",
+  "拼多多": "#e02e24",
+  "线下超市": "#42a85f",
+  "其他平台": "#686de0"
+};
 
 Page({
   data: {
     itemId: "",
     item: null as any,
     sortMode: "priceAsc" as SortMode,
-    sortedBills: [] as Array<BillRecord & { displayDate: string; platformMark: string; deliveryLabel: string }>,
+    sortedBills: [] as Array<
+      BillRecord & { displayDate: string; platformMark: string; platformColor: string; deliveryLabel: string }
+    >,
     unit: "",
     platforms,
     platformIndex: 0,
@@ -62,6 +71,7 @@ Page({
         ...bill,
         displayDate: formatBillDate(bill.date),
         platformMark: bill.platform.slice(0, 1),
+        platformColor: platformColors[bill.platform],
         deliveryLabel: `${bill.platform === "线下超市" ? "线下" : bill.platform}${bill.platform === "线下超市" ? "0" : bill.platform === "京东" ? "2" : "3"}天`
       }))
     });

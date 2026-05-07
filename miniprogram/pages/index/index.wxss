@@ -159,7 +159,8 @@
 
 .item-list {
   flex: 1;
-  height: calc(100vh - 392rpx);
+  min-width: 0;
+  height: calc(100vh - 500rpx);
 }
 
 .item-card {
@@ -192,7 +193,7 @@
 }
 
 .card-side {
-  width: 184rpx;
+  width: 198rpx;
   align-self: stretch;
   flex-shrink: 0;
   display: flex;
@@ -225,8 +226,8 @@
 }
 
 .warning-icon {
-  width: 36rpx;
-  height: 36rpx;
+  width: 58rpx;
+  height: 58rpx;
   flex-shrink: 0;
 }
 
@@ -251,19 +252,20 @@
 
 .expired-callout {
   width: 100%;
-  min-height: 48rpx;
+  min-height: 66rpx;
   color: #f04f4f;
-  font-size: 20rpx;
-  line-height: 1.25;
-  font-weight: 700;
-  text-align: left;
+  font-size: 27rpx;
+  line-height: 1.2;
+  font-weight: 800;
+  text-align: center;
   display: flex;
   align-items: center;
+  justify-content: center;
 }
 
 .warning-holder {
   width: 100%;
-  min-height: 46rpx;
+  min-height: 66rpx;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -311,18 +313,17 @@
 
 .add-button {
   position: fixed;
-  left: 50%;
-  bottom: 142rpx;
-  width: 52rpx;
-  height: 52rpx;
+  right: 34rpx;
+  bottom: 146rpx;
+  width: 50rpx;
+  height: 50rpx;
   border-radius: 50%;
   border: 2rpx solid #62bd7b;
   background: #ffffff;
   color: #56b86f;
-  font-size: 38rpx;
-  line-height: 46rpx;
+  font-size: 34rpx;
+  line-height: 44rpx;
   z-index: 12;
-  transform: translateX(-50%);
   box-shadow: 0 8rpx 18rpx rgba(75, 172, 100, 0.18);
 }
 

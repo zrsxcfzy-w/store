@@ -120,13 +120,13 @@ Page({
   },
 
   exportList() {
-    const text = exportShoppingList();
+    const shoppingList = exportShoppingList();
     wx.setClipboardData({
-      data: text,
+      data: shoppingList.content,
       success: () => {
         wx.showModal({
-          title: "购物清单已复制",
-          content: text,
+          title: shoppingList.count ? "购物清单已复制" : "暂无需要购买",
+          content: shoppingList.summary,
           showCancel: false
         });
       }

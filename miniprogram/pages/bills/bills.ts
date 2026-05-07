@@ -2,10 +2,25 @@ import { BillRecord, InventoryItem, addBill, currentHouse, getAllBillViews } fro
 import { DeliveryPlatform, compareIsoDate, formatChineseDate, todayIso } from "../../utils/date";
 
 const platforms: DeliveryPlatform[] = ["京东", "淘宝", "拼多多", "线下超市", "其他平台"];
+const platformColors: Record<DeliveryPlatform, string> = {
+  "京东": "#e1251b",
+  "淘宝": "#ff5000",
+  "拼多多": "#e02e24",
+  "线下超市": "#42a85f",
+  "其他平台": "#686de0"
+};
 
 Page({
   data: {
-    bills: [] as Array<BillRecord & { itemName: string; unit: string; displayDate: string; itemMark: string }>,
+    bills: [] as Array<
+      BillRecord & {
+        itemName: string;
+        unit: string;
+        displayDate: string;
+        platformMark: string;
+        platformColor: string;
+      }
+    >,
     items: [] as InventoryItem[],
     itemIndex: 0,
     selectedItemName: "",
@@ -37,7 +52,8 @@ Page({
       selectedItemName: house.items[itemIndex]?.name || "",
       bills: getAllBillViews().map((bill) => ({
         ...bill,
-        itemMark: bill.itemName.slice(0, 1)
+        platformMark: bill.platform.slice(0, 1),
+        platformColor: platformColors[bill.platform]
       }))
     });
   },

@@ -3,16 +3,22 @@
 }
 
 .bill-page .header-title {
-  max-width: 330rpx;
+  max-width: calc(100% - 280rpx);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  margin-left: 74rpx;
+  text-align: left;
+}
+
+.bill-page .page-header {
+  justify-content: flex-start;
 }
 
 .header-add-button {
   position: absolute;
   right: 0;
-  top: 5rpx;
+  top: 4rpx;
   width: 172rpx;
   height: 56rpx;
   line-height: 56rpx;
@@ -159,6 +165,11 @@
   display: flex;
   align-items: center;
   gap: 10rpx;
+  min-width: 0;
+}
+
+.platform > view {
+  min-width: 0;
 }
 
 .platform-badge {
@@ -178,6 +189,9 @@
   display: block;
   color: #333333;
   font-size: 23rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .delivery-tag {
@@ -190,6 +204,11 @@
   font-size: 20rpx;
   display: inline-flex;
   align-items: center;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .price {

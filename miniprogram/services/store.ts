@@ -77,6 +77,12 @@ export interface ItemView extends InventoryItem {
   priceRange: string;
 }
 
+export interface ShoppingListExport {
+  count: number;
+  summary: string;
+  content: string;
+}
+
 function id(prefix: string): string {
   return `${prefix}_${Date.now()}_${Math.floor(Math.random() * 10000)}`;
 }
@@ -239,6 +245,9 @@ export function getItemViews(): ItemView[] {
 
 export function sortItems(a: ItemView, b: ItemView): number {
   if (a.stock !== b.stock) return a.stock - b.stock;
+  const aExpired = a.nextSuggestedText === "已到期";
+  const bExpired = b.nextSuggestedText === "已到期";
+  if (aExpired !== bExpired) return aExpired ? -1 : 1;
   return compareIsoDate(a.nextSuggestedDate, b.nextSuggestedDate);
 }
 
@@ -345,12 +354,31 @@ export function getAllBillViews(): Array<BillRecord & { itemName: string; unit: 
     .sort((a, b) => compareIsoDate(b.date, a.date));
 }
 
-export function exportShoppingList(): string {
-  const list = getItemViews()
+function getShoppingListItems(): ItemView[] {
+  return getItemViews()
     .filter((item) => item.stock <= 2 || item.nextSuggestedText === "已到期" || daysBetween(todayIso(), item.nextSuggestedDate) <= 5)
     .sort(sortItems);
-  if (!list.length) return "当前没有需要购买的物品";
-  return `当前需要购买${list.length}件物品`;
+}
+
+export function exportShoppingList(): ShoppingListExport {
+  const list = getShoppingListItems();
+  if (!list.length) {
+    return {
+      count: 0,
+      summary: "当前没有需要购买的物品",
+      content: "当前没有需要购买的物品"
+    };
+  }
+  const summary = `当前需要购买${list.length}件物品`;
+  const details = list.map(
+    (item, index) =>
+      `${index + 1}. ${item.name} 剩余库存: ${item.stock}${item.unit} 预计购买: ${item.nextSuggestedText} 位置: ${item.fullLocationPath}`
+  );
+  return {
+    count: list.length,
+    summary,
+    content: [summary, ...details].join("\n")
+  };
 }
 
 export function reminderListText(): string {

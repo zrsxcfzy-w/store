@@ -21,9 +21,9 @@
   <view class="record panel" wx:for="{{sortedBills}}" wx:for-item="bill" wx:key="id">
     <view class="record-date">{{bill.displayDate}}</view>
     <view class="platform">
-      <text class="platform-badge">{{bill.platformMark}}</text>
+      <text class="platform-badge" style="background-color: {{bill.platformColor}};">{{bill.platformMark}}</text>
       <view>
-        <text class="platform-name">{{bill.platform}}</text>
+        <text class="platform-name" style="color: {{bill.platformColor}};">{{bill.platform}}</text>
         <text class="delivery-tag">{{bill.deliveryLabel}}</text>
       </view>
     </view>

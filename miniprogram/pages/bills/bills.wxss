@@ -33,6 +33,36 @@
   height: calc(100vh - 286rpx);
 }
 
+.bills-page .bill-head,
+.bills-page .record {
+  grid-template-columns: 1.08fr 1.18fr 0.95fr 0.86fr 0.62fr;
+  gap: 8rpx;
+}
+
+.bills-page .bill-head text:nth-child(2) {
+  padding-left: 54rpx;
+  box-sizing: border-box;
+}
+
+.bills-page .bill-head text:nth-child(3),
+.bills-page .bill-head text:nth-child(4) {
+  text-align: center;
+}
+
+.bills-page .bill-head text:nth-child(5) {
+  text-align: right;
+}
+
+.bill-item-name {
+  color: #333333;
+  font-size: 23rpx;
+  line-height: 1.25;
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .modal-mask {
   position: fixed;
   inset: 0;
