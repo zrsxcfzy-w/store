@@ -12,6 +12,7 @@ Page({
     unit: "",
     platforms,
     platformIndex: 0,
+    recordModalVisible: false,
     form: {
       date: todayIso(),
       platform: "京东" as DeliveryPlatform,
@@ -70,6 +71,16 @@ Page({
     wx.navigateBack();
   },
 
+  openBillModal() {
+    this.setData({ recordModalVisible: true });
+  },
+
+  closeBillModal() {
+    this.setData({ recordModalVisible: false });
+  },
+
+  noop() {},
+
   onDateChange(event: any) {
     const selectedDate = event.detail.value;
     const today = todayIso();
@@ -117,6 +128,7 @@ Page({
       quantity
     });
     this.setData({
+      recordModalVisible: false,
       "form.price": "",
       "form.quantity": "1"
     });

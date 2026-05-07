@@ -8,6 +8,7 @@ function splitDetailText(text: string): string[] {
 }
 
 function formatDetailText(locationName: string, detail: string[] = []): string {
+  if (locationName === "其他") return detail.filter(Boolean).join(" > ");
   return [locationName, ...detail].filter(Boolean).join(" > ");
 }
 
@@ -88,7 +89,7 @@ Page({
     this.setData({
       locationIndex,
       locationName,
-      "form.locationDetailText": formatDetailText(locationName, detail)
+      "form.locationDetailText": locationName === "其他" ? "" : formatDetailText(locationName, detail)
     });
   },
 

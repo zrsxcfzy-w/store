@@ -23,7 +23,8 @@ Page({
     house: {} as House,
     locations: [] as House["locations"],
     locationIndex: 0,
-    detailText: ""
+    detailText: "",
+    stockReduceOptions: ["0"] as string[]
   },
 
   onLoad(options: any) {
@@ -48,7 +49,8 @@ Page({
       locations: house.locations,
       item,
       locationIndex,
-      detailText: detailTextFor(item)
+      detailText: detailTextFor(item),
+      stockReduceOptions: Array.from({ length: item.stock + 1 }, (_entry, index) => `${index}`)
     });
   },
 
@@ -68,30 +70,11 @@ Page({
     wx.navigateBack();
   },
 
-  minusStock() {
-    wx.showActionSheet({
-      itemList: ["减少1个", "减少2个", "减少3个", "减少5个", "自定义数量"],
-      success: (res: any) => {
-        const fixed = [1, 2, 3, 5][res.tapIndex];
-        if (fixed) {
-          consumeItem(this.data.itemId, fixed);
-          this.refresh();
-          return;
-        }
-        wx.showModal({
-          title: "减少库存",
-          editable: true,
-          placeholderText: "请输入减少数量",
-          success: (modal: any) => {
-            const quantity = Number(modal.content);
-            if (modal.confirm && quantity > 0) {
-              consumeItem(this.data.itemId, quantity);
-              this.refresh();
-            }
-          }
-        });
-      }
-    });
+  onReduceStockChange(event: any) {
+    const quantity = Number(this.data.stockReduceOptions[Number(event.detail.value)] || 0);
+    if (quantity <= 0) return;
+    consumeItem(this.data.itemId, quantity);
+    this.refresh();
   },
 
   onNameInput(event: any) {

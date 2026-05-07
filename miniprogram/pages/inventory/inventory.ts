@@ -1,4 +1,4 @@
-import { ItemView, getItemViews } from "../../services/store";
+import { ItemView, getItemViews, sortItems } from "../../services/store";
 
 Page({
   data: {
@@ -6,7 +6,7 @@ Page({
   },
 
   onShow() {
-    this.setData({ items: getItemViews() });
+    this.setData({ items: getItemViews().sort(sortItems) });
   },
 
   goHome() {

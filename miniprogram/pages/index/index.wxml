@@ -5,7 +5,7 @@
       <view class="house-copy">
         <text class="house-name">关于 {{house.name}}</text>
         <view class="top-actions">
-          <button class="tool-button" bindtap="openManual"><text class="mini-icon">▣</text> 查看说明书</button>
+          <button class="tool-button" bindtap="openManual"><text class="mini-icon">▣</text> 查看使用说明</button>
           <button class="tool-button" bindtap="exportList"><text class="mini-icon">⇩</text> 导出清单</button>
         </view>
       </view>
@@ -60,14 +60,20 @@
         >
           <image class="item-thumb" src="{{item.imageUrl}}" mode="aspectFit"></image>
           <view class="item-info">
-            <view class="card-head">
-              <text class="location-pill" style="background-color: {{item.locationColor}};">{{item.displayLocation}}</text>
-            </view>
             <view class="card-grid">
               <text class="item-name">{{item.name}}</text>
               <text>剩余库存: {{item.stock}}{{item.unit}}</text>
               <text>周期: {{item.cycleDays}}天</text>
-              <text class="danger">预计购买: {{item.nextSuggestedText}}</text>
+              <text wx:if="{{item.nextSuggestedText !== '已到期'}}" class="next-text pending">预计购买: {{item.nextSuggestedText}}</text>
+            </view>
+          </view>
+          <view class="card-side">
+            <view class="location-pill" style="background-color: {{item.locationColor}};">
+              <text>{{item.displayLocation}}</text>
+            </view>
+            <view wx:if="{{item.nextSuggestedText === '已到期'}}" class="expired-callout">预计购买:已到期,请及时采购</view>
+            <view wx:if="{{item.nextSuggestedText === '已到期'}}" class="warning-holder">
+              <image class="warning-icon" src="/assets/warning.png" mode="aspectFit"></image>
             </view>
           </view>
         </view>

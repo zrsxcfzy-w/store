@@ -1,5 +1,5 @@
 .home-page {
-  padding-bottom: 148rpx;
+  padding-bottom: 190rpx;
   background: #fffdf9;
 }
 
@@ -159,7 +159,7 @@
 
 .item-list {
   flex: 1;
-  height: calc(100vh - 348rpx);
+  height: calc(100vh - 392rpx);
 }
 
 .item-card {
@@ -185,40 +185,88 @@
   min-width: 0;
 }
 
-.card-head {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 12rpx;
-}
-
 .item-name {
   font-size: 22rpx;
   font-weight: 600;
   color: #222222;
 }
 
+.card-side {
+  width: 184rpx;
+  align-self: stretch;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10rpx;
+}
+
 .location-pill {
   color: #ffffff;
-  border-radius: 999rpx;
-  min-width: 92rpx;
-  padding: 7rpx 18rpx;
+  border-radius: 10rpx;
+  min-width: 88rpx;
+  max-width: 176rpx;
+  padding: 7rpx 16rpx;
   font-size: 21rpx;
   font-weight: 700;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8rpx;
+  min-height: 34rpx;
+  box-sizing: border-box;
+}
+
+.location-pill text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.warning-icon {
+  width: 36rpx;
+  height: 36rpx;
   flex-shrink: 0;
 }
 
 .card-grid {
-  margin-top: 12rpx;
   display: grid;
   gap: 6rpx;
   color: #666666;
   font-size: 22rpx;
 }
 
-.danger {
-  color: #ff7634;
+.next-text {
   font-weight: 700;
+}
+
+.next-text.expired {
+  color: #f04f4f;
+}
+
+.next-text.pending {
+  color: #35a85c;
+}
+
+.expired-callout {
+  width: 100%;
+  min-height: 48rpx;
+  color: #f04f4f;
+  font-size: 20rpx;
+  line-height: 1.25;
+  font-weight: 700;
+  text-align: left;
+  display: flex;
+  align-items: center;
+}
+
+.warning-holder {
+  width: 100%;
+  min-height: 46rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .guide-bubble {
@@ -263,17 +311,19 @@
 
 .add-button {
   position: fixed;
-  right: 42rpx;
-  bottom: 138rpx;
-  width: 88rpx;
-  height: 88rpx;
+  left: 50%;
+  bottom: 142rpx;
+  width: 52rpx;
+  height: 52rpx;
   border-radius: 50%;
-  background: linear-gradient(180deg, #72c986 0%, #59ba75 100%);
-  color: #ffffff;
-  font-size: 54rpx;
-  line-height: 82rpx;
+  border: 2rpx solid #62bd7b;
+  background: #ffffff;
+  color: #56b86f;
+  font-size: 38rpx;
+  line-height: 46rpx;
   z-index: 12;
-  box-shadow: 0 10rpx 24rpx rgba(75, 172, 100, 0.28);
+  transform: translateX(-50%);
+  box-shadow: 0 8rpx 18rpx rgba(75, 172, 100, 0.18);
 }
 
 .modal-mask,

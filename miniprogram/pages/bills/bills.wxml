@@ -1,8 +1,11 @@
 <view class="page bills-page">
-  <view class="page-title">账单</view>
+  <view class="title-row">
+    <view class="page-title">账单</view>
+    <button class="add-record-button green-button" bindtap="openRecordModal">添加购买记录</button>
+  </view>
   <view class="bill-head">
     <text>时间</text>
-    <text>物品</text>
+    <text>平台</text>
     <text>价格(元)</text>
     <text>数量</text>
   </view>
@@ -12,14 +15,47 @@
       <view class="platform">
         <text class="platform-badge">{{item.itemMark}}</text>
         <view>
-          <text class="platform-name">{{item.itemName}}</text>
-          <text class="delivery-tag">{{item.platform}}</text>
+          <text class="platform-name">{{item.platform}}</text>
+          <text class="delivery-tag">{{item.itemName}}</text>
         </view>
       </view>
       <view class="price">{{item.price}}</view>
       <view class="quantity">{{item.quantity}}{{item.unit}}</view>
     </view>
   </scroll-view>
+
+  <view wx:if="{{recordModalVisible}}" class="modal-mask" bindtap="closeRecordModal">
+    <view class="record-modal panel" catchtap="noop">
+      <view class="modal-title">添加购买记录</view>
+      <picker range="{{items}}" range-key="name" value="{{itemIndex}}" bindchange="onItemChange">
+        <view class="field">
+          <text>物品</text>
+          <text>{{selectedItemName}}</text>
+        </view>
+      </picker>
+      <picker mode="date" value="{{form.date}}" bindchange="onDateChange">
+        <view class="field">
+          <text>时间</text>
+          <text>{{formDateText}}</text>
+        </view>
+      </picker>
+      <picker range="{{platforms}}" value="{{platformIndex}}" bindchange="onPlatformChange">
+        <view class="field">
+          <text>平台</text>
+          <text>{{form.platform}}</text>
+        </view>
+      </picker>
+      <view class="field">
+        <text>价格(元)</text>
+        <input type="digit" placeholder="0.00" value="{{form.price}}" bindinput="onPriceInput" />
+      </view>
+      <view class="field">
+        <text>数量</text>
+        <input type="number" placeholder="1" value="{{form.quantity}}" bindinput="onQuantityInput" />
+      </view>
+      <button class="submit green-button" bindtap="submitBill">保存</button>
+    </view>
+  </view>
 
   <view class="bottom-tabbar">
     <view class="tab-item" bindtap="goHome"><image class="tab-img" src="/assets/tab-home.png" mode="aspectFit"></image><text>首页</text></view>
