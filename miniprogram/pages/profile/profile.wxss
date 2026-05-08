@@ -148,14 +148,17 @@
 }
 
 .switch-button {
-  margin-top: 28rpx;
-  width: 100%;
+  margin: 28rpx -14rpx 0;
+  width: calc(100% + 28rpx);
   height: 78rpx;
-  line-height: 78rpx;
+  line-height: normal;
   border-radius: 14rpx;
-  font-size: 26rpx;
-  padding: 0 18rpx;
+  font-size: 25rpx;
+  padding: 0 12rpx;
   box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   white-space: nowrap;
 }
 

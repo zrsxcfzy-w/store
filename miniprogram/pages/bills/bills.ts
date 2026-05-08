@@ -18,6 +18,12 @@ const platformColors: Record<DeliveryPlatform, string> = {
   "其他平台": "#686de0"
 };
 
+function platformMark(platform: DeliveryPlatform): string {
+  if (platform === "线下超市") return "线下";
+  if (platform === "其他平台") return "其他";
+  return platform.slice(0, 1);
+}
+
 Page({
   data: {
     bills: [] as Array<
@@ -51,7 +57,7 @@ Page({
     const bills = getAllBillViews()
       .map((bill) => ({
         ...bill,
-        platformMark: bill.platform === "线下超市" ? "线下" : bill.platform.slice(0, 1),
+        platformMark: platformMark(bill.platform),
         platformColor: platformColors[bill.platform]
       }))
       .sort(sortBillsByDateDescPriceDesc);
