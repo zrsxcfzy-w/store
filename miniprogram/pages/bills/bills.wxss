@@ -86,3 +86,30 @@
   font-weight: 800;
   margin-bottom: 12rpx;
 }
+
+.modal-actions {
+  margin-top: 18rpx;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16rpx;
+}
+
+.modal-actions button {
+  height: 72rpx;
+  line-height: 72rpx;
+  border-radius: 12rpx;
+  font-size: 24rpx;
+}
+
+.modal-actions .submit {
+  margin-top: 0;
+}
+
+.cancel-button {
+  background: #f2f2f2;
+  color: #333333;
+}
+
+.cancel-button::after {
+  border: 0;
+}

@@ -306,6 +306,15 @@ export function addBill(itemId: string, bill: Omit<BillRecord, "id">): void {
   saveHouse(house);
 }
 
+export function deleteBill(billId: string): void {
+  const house = currentHouse();
+  house.items = house.items.map((item) => ({
+    ...item,
+    bills: item.bills.filter((bill) => bill.id !== billId)
+  }));
+  saveHouse(house);
+}
+
 export function updateTagName(kind: "location" | "category", tagId: string, name: string): void {
   const house = currentHouse();
   if (kind === "location") {

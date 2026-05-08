@@ -1,5 +1,9 @@
 <view class="page list-page">
   <view class="page-title">库存</view>
+  <view class="filter-row">
+    <button class="{{stockFilter === 'zero' ? 'active' : ''}}" data-filter="zero" bindtap="setStockFilter">库存为0的物品</button>
+    <button class="{{stockFilter === 'nonzero' ? 'active' : ''}}" data-filter="nonzero" bindtap="setStockFilter">库存不为0的物品</button>
+  </view>
   <scroll-view scroll-y class="list-scroll">
     <view class="summary-card panel" wx:for="{{items}}" wx:key="id" data-id="{{item.id}}" bindtap="goDetail">
       <image class="summary-thumb" src="{{item.imageUrl}}" mode="aspectFit"></image>

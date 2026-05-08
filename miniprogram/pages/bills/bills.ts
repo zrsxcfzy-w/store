@@ -3,6 +3,7 @@ import {
   InventoryItem,
   addBill,
   currentHouse,
+  deleteBill,
   getAllBillViews,
   sortBillsByDateDescPriceDesc
 } from "../../services/store";
@@ -81,6 +82,21 @@ Page({
   },
 
   noop() {},
+
+  onRecordLongPress(event: any) {
+    const billId = event.currentTarget.dataset.id;
+    if (!billId) return;
+    wx.showActionSheet({
+      itemList: ["删除"],
+      itemColor: "#e64340",
+      success: (res) => {
+        if (res.tapIndex !== 0) return;
+        deleteBill(billId);
+        this.onShow();
+        wx.showToast({ title: "已删除" });
+      }
+    });
+  },
 
   onItemChange(event: any) {
     const itemIndex = Number(event.detail.value);

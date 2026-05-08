@@ -1,12 +1,37 @@
-import { ItemView, getItemViews, sortItems } from "../../services/store";
+import { ItemView, getItemViews } from "../../services/store";
+
+type StockFilter = "zero" | "nonzero";
+
+function sortByNamePinyin(a: ItemView, b: ItemView): number {
+  return a.name.localeCompare(b.name, "zh-CN-u-co-pinyin");
+}
+
+function sortByStockAsc(a: ItemView, b: ItemView): number {
+  if (a.stock !== b.stock) return a.stock - b.stock;
+  return sortByNamePinyin(a, b);
+}
 
 Page({
   data: {
-    items: [] as ItemView[]
+    items: [] as ItemView[],
+    stockFilter: "zero" as StockFilter
   },
 
   onShow() {
-    this.setData({ items: getItemViews().sort(sortItems) });
+    this.refreshItems(this.data.stockFilter);
+  },
+
+  refreshItems(stockFilter: StockFilter) {
+    const items = getItemViews()
+      .filter((item) => (stockFilter === "zero" ? item.stock === 0 : item.stock !== 0))
+      .sort(stockFilter === "zero" ? sortByNamePinyin : sortByStockAsc);
+    this.setData({ items });
+  },
+
+  setStockFilter(event: any) {
+    const stockFilter = event.currentTarget.dataset.filter as StockFilter;
+    this.setData({ stockFilter });
+    this.refreshItems(stockFilter);
   },
 
   goHome() {
