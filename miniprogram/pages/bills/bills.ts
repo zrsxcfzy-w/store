@@ -51,7 +51,7 @@ Page({
     const bills = getAllBillViews()
       .map((bill) => ({
         ...bill,
-        platformMark: bill.platform.slice(0, 1),
+        platformMark: bill.platform === "线下超市" ? "线下" : bill.platform.slice(0, 1),
         platformColor: platformColors[bill.platform]
       }))
       .sort(sortBillsByDateDescPriceDesc);

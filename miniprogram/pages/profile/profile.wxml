@@ -35,7 +35,23 @@
 
   <view class="tip-panel">也可以在主页面长按分类/位置格子快速编辑</view>
 
-  <button class="switch-button green-button" bindtap="switchHouse">▦ 切换其他房子</button>
+  <button class="switch-button green-button" bindtap="switchHouse">▦ 创建/切换到其他家庭仓库</button>
+
+  <view wx:if="{{switchModalVisible}}" class="modal-mask" bindtap="closeSwitchHouseModal">
+    <view class="switch-modal panel" catchtap="noop">
+      <view class="modal-title">切换到其他家庭仓库</view>
+      <picker range="{{switchableHouseNames}}" value="{{switchHouseIndex}}" bindchange="onSwitchHouseChange">
+        <view class="field">
+          <text>家庭仓库</text>
+          <text>{{selectedSwitchHouseName}}</text>
+        </view>
+      </picker>
+      <view class="modal-actions">
+        <button class="cancel-button" bindtap="closeSwitchHouseModal">取消</button>
+        <button class="submit green-button" bindtap="confirmSwitchHouse">确认切换</button>
+      </view>
+    </view>
+  </view>
 
   <view class="bottom-tabbar">
     <view class="tab-item" bindtap="goHome">

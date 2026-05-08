@@ -153,5 +153,79 @@
   height: 78rpx;
   line-height: 78rpx;
   border-radius: 14rpx;
+  font-size: 26rpx;
+  padding: 0 18rpx;
+  box-sizing: border-box;
+  white-space: nowrap;
+}
+
+.modal-mask {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  background: rgba(0, 0, 0, 0.34);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 44rpx;
+  box-sizing: border-box;
+}
+
+.switch-modal {
+  width: 100%;
+  padding: 24rpx;
+  box-sizing: border-box;
+}
+
+.modal-title {
   font-size: 30rpx;
+  font-weight: 800;
+  margin-bottom: 12rpx;
+}
+
+.field {
+  min-height: 76rpx;
+  border-bottom: 1rpx solid #f1f1f1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20rpx;
+  color: #444444;
+  font-size: 24rpx;
+}
+
+.field text:last-child {
+  flex: 1;
+  text-align: right;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.modal-actions {
+  margin-top: 18rpx;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 16rpx;
+}
+
+.modal-actions button {
+  width: 100%;
+  min-width: 0;
+  height: 72rpx;
+  line-height: 72rpx;
+  margin: 0;
+  padding: 0 12rpx;
+  border-radius: 12rpx;
+  font-size: 24rpx;
+  box-sizing: border-box;
+}
+
+.cancel-button {
+  background: #f2f2f2;
+  color: #333333;
+}
+
+.cancel-button::after {
+  border: 0;
 }

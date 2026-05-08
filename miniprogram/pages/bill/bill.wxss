@@ -173,16 +173,20 @@
 }
 
 .platform-badge {
-  width: 44rpx;
+  min-width: 44rpx;
+  width: auto;
   height: 44rpx;
+  padding: 0 10rpx;
   border-radius: 10rpx;
   background: #ff3b30;
   color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 22rpx;
+  font-size: 21rpx;
   font-weight: 800;
+  box-sizing: border-box;
+  white-space: nowrap;
 }
 
 .platform-name {

@@ -7,7 +7,9 @@ function sortByNamePinyin(a: ItemView, b: ItemView): number {
 }
 
 function sortByStockAsc(a: ItemView, b: ItemView): number {
-  if (a.stock !== b.stock) return a.stock - b.stock;
+  const aStock = Number(a.stock || 0);
+  const bStock = Number(b.stock || 0);
+  if (aStock !== bStock) return aStock - bStock;
   return sortByNamePinyin(a, b);
 }
 

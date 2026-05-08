@@ -3,6 +3,11 @@ import { House, currentHouse, listHouses, switchToHouse, switchToNewHouse, updat
 Page({
   data: {
     house: {} as House,
+    switchModalVisible: false,
+    switchableHouses: [] as House[],
+    switchableHouseNames: [] as string[],
+    switchHouseIndex: 0,
+    selectedSwitchHouseName: "",
     functions: [
       { name: "数据备份", icon: "☁", color: "green" },
       { name: "数据恢复", icon: "↓", color: "blue" },
@@ -43,36 +48,60 @@ Page({
 
   switchHouse() {
     wx.showActionSheet({
-      itemList: ["创建新的房子", "选择已创建的房子"],
+      itemList: ["创建新的家庭仓库", "切换到其他家庭仓库"],
       success: (res: any) => {
         if (res.tapIndex === 0) {
           switchToNewHouse();
-          wx.showToast({ title: "已创建新房子" });
+          wx.showToast({ title: "已创建家庭仓库" });
           wx.redirectTo({ url: "/pages/index/index" });
           return;
         }
-        this.chooseExistingHouse();
+        this.openSwitchHouseModal();
       }
     });
   },
 
-  chooseExistingHouse() {
+  openSwitchHouseModal() {
     const current = currentHouse();
     const houses = listHouses().filter((house) => house.id !== current.id);
     if (!houses.length) {
-      wx.showToast({ title: "暂无其他房子", icon: "none" });
+      wx.showToast({ title: "暂无其他家庭仓库", icon: "none" });
       return;
     }
-    wx.showActionSheet({
-      itemList: houses.map((house) => house.name || "未命名房子"),
-      success: (res: any) => {
-        const house = houses[res.tapIndex];
-        if (!house) return;
-        switchToHouse(house.id);
-        wx.showToast({ title: "已切换房子" });
-        wx.redirectTo({ url: "/pages/index/index" });
-      }
+    this.setData({
+      switchModalVisible: true,
+      switchableHouses: houses,
+      switchableHouseNames: houses.map((house) => house.name || "未命名家庭仓库"),
+      switchHouseIndex: 0,
+      selectedSwitchHouseName: houses[0]?.name || "未命名家庭仓库"
     });
+  },
+
+  closeSwitchHouseModal() {
+    this.setData({ switchModalVisible: false });
+  },
+
+  noop() {},
+
+  onSwitchHouseChange(event: any) {
+    const switchHouseIndex = Number(event.detail.value);
+    const house = this.data.switchableHouses[switchHouseIndex];
+    this.setData({
+      switchHouseIndex,
+      selectedSwitchHouseName: house?.name || "未命名家庭仓库"
+    });
+  },
+
+  confirmSwitchHouse() {
+    const house = this.data.switchableHouses[this.data.switchHouseIndex];
+    if (!house) {
+      wx.showToast({ title: "请选择家庭仓库", icon: "none" });
+      return;
+    }
+    switchToHouse(house.id);
+    this.setData({ switchModalVisible: false });
+    wx.showToast({ title: "已切换家庭仓库" });
+    wx.redirectTo({ url: "/pages/index/index" });
   },
 
   goHome() {
