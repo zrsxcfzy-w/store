@@ -14,6 +14,13 @@
   gap: 18rpx;
 }
 
+.title-actions {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  flex-shrink: 0;
+}
+
 .page-title {
   font-size: 34rpx;
   font-weight: 800;
@@ -29,8 +36,134 @@
   flex-shrink: 0;
 }
 
+.batch-button,
+.danger-button {
+  width: 154rpx;
+  height: 58rpx;
+  line-height: 58rpx;
+  border-radius: 12rpx;
+  font-size: 22rpx;
+  flex-shrink: 0;
+}
+
+.batch-button {
+  background: #f0f0f0;
+  color: #333333;
+  font-weight: 700;
+}
+
+.danger-button {
+  background: #e64340;
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.batch-bar {
+  min-height: 68rpx;
+  margin: -4rpx 0 18rpx;
+  padding: 0 18rpx;
+  border-radius: 12rpx;
+  background: #fff4f4;
+  color: #c93636;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18rpx;
+  font-size: 23rpx;
+  font-weight: 700;
+}
+
 .bills-scroll {
   height: calc(100vh - 286rpx);
+}
+
+.date-group {
+  margin-bottom: 34rpx;
+  padding: 18rpx 18rpx 4rpx;
+  box-sizing: border-box;
+}
+
+.date-group-header {
+  min-height: 86rpx;
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr) 104rpx;
+  gap: 16rpx;
+  align-items: center;
+}
+
+.date-title-row {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  min-width: 0;
+}
+
+.fold-icon {
+  width: 42rpx;
+  height: 42rpx;
+  border-radius: 50%;
+  background: #f2f2f2;
+  color: #444444;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 34rpx;
+  font-weight: 800;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.select-box {
+  width: 38rpx;
+  height: 38rpx;
+  border-radius: 8rpx;
+  border: 2rpx solid #d4d4d4;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24rpx;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+.select-box.selected {
+  border-color: #e64340;
+  background: #e64340;
+}
+
+.date-title {
+  font-size: 32rpx;
+  font-weight: 800;
+  color: #2d2d2d;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.date-summary {
+  color: #333333;
+  font-size: 23rpx;
+  font-weight: 700;
+  line-height: 1.35;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.group-delete-button {
+  width: 104rpx;
+  height: 54rpx;
+  line-height: 54rpx;
+  border-radius: 12rpx;
+  background: #e64340;
+  color: #ffffff;
+  font-size: 22rpx;
+  font-weight: 700;
+}
+
+.group-records {
+  margin-top: 14rpx;
 }
 
 .bills-page .bill-head,
@@ -51,6 +184,14 @@
 
 .bills-page .bill-head text:nth-child(5) {
   text-align: right;
+}
+
+.bills-page .record {
+  box-shadow: none;
+  border: 0;
+  border-radius: 0;
+  border-top: 1rpx solid #f0f0f0;
+  margin-bottom: 0;
 }
 
 .bill-item-name {

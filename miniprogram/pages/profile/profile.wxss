@@ -147,19 +147,25 @@
   justify-content: center;
 }
 
-.switch-button {
+.house-action-row {
   margin: 28rpx -14rpx 0;
-  width: calc(100% + 28rpx);
+  height: 78rpx;
+  display: flex;
+  gap: 16rpx;
+}
+
+.house-action-button {
+  flex: 1;
+  min-width: 0;
   height: 78rpx;
   line-height: normal;
   border-radius: 14rpx;
   font-size: 25rpx;
-  padding: 0 12rpx;
+  padding: 0 10rpx;
   box-sizing: border-box;
   display: flex;
   align-items: center;
   justify-content: center;
-  white-space: nowrap;
 }
 
 .modal-mask {

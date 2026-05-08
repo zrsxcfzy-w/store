@@ -4,6 +4,8 @@ import {
   addBill,
   currentHouse,
   deleteBill,
+  deleteBillsByDate,
+  deleteBillsByDates,
   getAllBillViews
 } from "../../services/store";
 import { DeliveryPlatform, compareIsoDate, formatDotDate, todayIso } from "../../utils/date";
@@ -23,17 +25,36 @@ function platformMark(platform: DeliveryPlatform): string {
   return platform.slice(0, 1);
 }
 
+function needsPlatformDetail(platform: DeliveryPlatform): boolean {
+  return platform === "线下超市" || platform === "其他平台";
+}
+
+type BillRecordView = BillRecord & {
+  itemName: string;
+  unit: string;
+  displayDate: string;
+  displayPlatform: string;
+  platformMark: string;
+  platformColor: string;
+};
+
+type DateBillGroup = {
+  date: string;
+  displayDate: string;
+  expanded: boolean;
+  selected: boolean;
+  totalQuantity: number;
+  totalAmount: string;
+  records: BillRecordView[];
+};
+
 Page({
   data: {
-    bills: [] as Array<
-      BillRecord & {
-        itemName: string;
-        unit: string;
-        displayDate: string;
-        platformMark: string;
-        platformColor: string;
-      }
-    >,
+    billGroups: [] as DateBillGroup[],
+    collapsedDateMap: {} as Record<string, boolean>,
+    selectedDateMap: {} as Record<string, boolean>,
+    selectedDateCount: 0,
+    batchDeleteMode: false,
     items: [] as InventoryItem[],
     itemIndex: 0,
     selectedItemName: "",
@@ -43,22 +64,18 @@ Page({
     form: {
       date: todayIso(),
       platform: "京东" as DeliveryPlatform,
+      platformDetail: "",
       price: "",
       quantity: "1"
     },
-    formDateText: formatDotDate(todayIso())
+    formDateText: formatDotDate(todayIso()),
+    requiresPlatformDetail: false
   },
 
   onShow() {
     const house = currentHouse();
     const today = todayIso();
     const itemIndex = Math.min(this.data.itemIndex, Math.max(house.items.length - 1, 0));
-    const bills = getAllBillViews()
-      .map((bill) => ({
-        ...bill,
-        platformMark: platformMark(bill.platform),
-        platformColor: platformColors[bill.platform]
-      }));
     if (compareIsoDate(this.data.form.date, today) > 0) {
       this.setData({
         "form.date": today,
@@ -69,7 +86,59 @@ Page({
       items: house.items,
       itemIndex,
       selectedItemName: house.items[itemIndex]?.name || "",
-      bills
+      billGroups: this.buildBillGroups()
+    });
+  },
+
+  buildBillGroups(collapsedDateMap?: Record<string, boolean>, selectedDateMap?: Record<string, boolean>): DateBillGroup[] {
+    const collapsedMap = collapsedDateMap || this.data.collapsedDateMap;
+    const selectedMap = selectedDateMap || this.data.selectedDateMap;
+    const groups: DateBillGroup[] = [];
+    const groupIndexByDate: Record<string, number> = {};
+
+    getAllBillViews().forEach((bill) => {
+      const record: BillRecordView = {
+        ...bill,
+        displayPlatform: bill.platformDetail || bill.platform,
+        platformMark: platformMark(bill.platform),
+        platformColor: platformColors[bill.platform]
+      };
+      const index = groupIndexByDate[bill.date];
+      if (index === undefined) {
+        groupIndexByDate[bill.date] = groups.length;
+        groups.push({
+          date: bill.date,
+          displayDate: bill.displayDate,
+          expanded: collapsedMap[bill.date] !== true,
+          selected: selectedMap[bill.date] === true,
+          totalQuantity: Number(bill.quantity || 0),
+          totalAmount: (Number(bill.price || 0) * Number(bill.quantity || 0)).toFixed(2),
+          records: [record]
+        });
+        return;
+      }
+
+      const group = groups[index];
+      const nextQuantity = Number(group.totalQuantity || 0) + Number(bill.quantity || 0);
+      const nextAmount = Number(group.totalAmount || 0) + Number(bill.price || 0) * Number(bill.quantity || 0);
+      group.totalQuantity = nextQuantity;
+      group.totalAmount = nextAmount.toFixed(2);
+      group.records.push(record);
+    });
+
+    return groups;
+  },
+
+  refreshBillGroups() {
+    const billGroups = this.buildBillGroups();
+    const selectedDateMap: Record<string, boolean> = {};
+    billGroups.forEach((group) => {
+      if (group.selected) selectedDateMap[group.date] = true;
+    });
+    this.setData({
+      billGroups,
+      selectedDateMap,
+      selectedDateCount: Object.keys(selectedDateMap).length
     });
   },
 
@@ -87,16 +156,100 @@ Page({
 
   noop() {},
 
+  toggleDateGroup(event: any) {
+    const date = event.currentTarget.dataset.date;
+    if (!date) return;
+    const collapsedDateMap = {
+      ...this.data.collapsedDateMap,
+      [date]: this.data.collapsedDateMap[date] !== true
+    };
+    this.setData({
+      collapsedDateMap,
+      billGroups: this.buildBillGroups(collapsedDateMap)
+    });
+  },
+
+  deleteDateGroup(event: any) {
+    const date = event.currentTarget.dataset.date;
+    if (!date) return;
+    wx.showModal({
+      title: "删除确认",
+      content: `确定删除${formatDotDate(date)}的所有记录吗？`,
+      confirmText: "删除",
+      confirmColor: "#e64340",
+      success: (res) => {
+        if (!res.confirm) return;
+        deleteBillsByDate(date);
+        this.refreshBillGroups();
+        wx.showToast({ title: "已删除" });
+      }
+    });
+  },
+
+  toggleBatchDelete() {
+    const batchDeleteMode = !this.data.batchDeleteMode;
+    this.setData({
+      batchDeleteMode,
+      selectedDateMap: {},
+      selectedDateCount: 0
+    });
+    this.refreshBillGroups();
+  },
+
+  toggleDateSelection(event: any) {
+    const date = event.currentTarget.dataset.date;
+    if (!date) return;
+    const selectedDateMap = { ...this.data.selectedDateMap };
+    if (selectedDateMap[date]) {
+      delete selectedDateMap[date];
+    } else {
+      selectedDateMap[date] = true;
+    }
+    this.setData({
+      selectedDateMap,
+      selectedDateCount: Object.keys(selectedDateMap).length,
+      billGroups: this.buildBillGroups(this.data.collapsedDateMap, selectedDateMap)
+    });
+  },
+
+  confirmBatchDeleteDates() {
+    const dates = Object.keys(this.data.selectedDateMap);
+    if (!dates.length) {
+      wx.showToast({ title: "请选择日期", icon: "none" });
+      return;
+    }
+    wx.showModal({
+      title: "删除确认",
+      content: `确定删除选中的${dates.length}天记录吗？`,
+      confirmText: "删除",
+      confirmColor: "#e64340",
+      success: (res) => {
+        if (!res.confirm) return;
+        deleteBillsByDates(dates);
+        this.setData({
+          batchDeleteMode: false,
+          selectedDateMap: {},
+          selectedDateCount: 0
+        });
+        this.refreshBillGroups();
+        wx.showToast({ title: "已删除" });
+      }
+    });
+  },
+
   onRecordLongPress(event: any) {
     const billId = event.currentTarget.dataset.id;
     if (!billId) return;
-    wx.showActionSheet({
-      itemList: ["删除"],
-      itemColor: "#e64340",
+    wx.showModal({
+      title: "删除记录",
+      content: "确定删除这条账单记录吗？",
+      cancelText: "取消",
+      confirmText: "删除",
+      confirmColor: "#e64340",
       success: (res) => {
-        if (res.tapIndex !== 0) return;
+        if (!res.confirm) return;
         deleteBill(billId);
-        this.onShow();
+        this.refreshBillGroups();
         wx.showToast({ title: "已删除" });
       }
     });
@@ -129,10 +282,17 @@ Page({
 
   onPlatformChange(event: any) {
     const platformIndex = Number(event.detail.value);
+    const platform = platforms[platformIndex];
     this.setData({
       platformIndex,
-      "form.platform": platforms[platformIndex]
+      "form.platform": platform,
+      "form.platformDetail": needsPlatformDetail(platform) ? this.data.form.platformDetail : "",
+      requiresPlatformDetail: needsPlatformDetail(platform)
     });
+  },
+
+  onPlatformDetailInput(event: any) {
+    this.setData({ "form.platformDetail": event.detail.value });
   },
 
   onPriceInput(event: any) {
@@ -159,14 +319,21 @@ Page({
       wx.showToast({ title: "请填写数量", icon: "none" });
       return;
     }
+    const platformDetail = String(this.data.form.platformDetail || "").trim();
+    if (needsPlatformDetail(this.data.form.platform) && !platformDetail) {
+      wx.showToast({ title: "请填写具体地点", icon: "none" });
+      return;
+    }
     addBill(item.id, {
       date: this.data.form.date,
       platform: this.data.form.platform,
+      platformDetail,
       price,
       quantity
     });
     this.setData({
       recordModalVisible: false,
+      "form.platformDetail": "",
       "form.price": "",
       "form.quantity": "1"
     });

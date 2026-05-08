@@ -1,4 +1,13 @@
-import { BillRecord, SortMode, addBill, formatBillDate, getItem, sortBillsByDateDescPriceDesc } from "../../services/store";
+import {
+  BillRecord,
+  SortMode,
+  addBill,
+  deleteBill,
+  deleteBills,
+  formatBillDate,
+  getItem,
+  sortBillsByDateDescPriceDesc
+} from "../../services/store";
 import { DeliveryPlatform, compareIsoDate, formatDotDate, todayIso } from "../../utils/date";
 
 const platforms: DeliveryPlatform[] = ["京东", "淘宝", "拼多多", "线下超市", "其他平台"];
@@ -16,14 +25,27 @@ function platformMark(platform: DeliveryPlatform): string {
   return platform.slice(0, 1);
 }
 
+function needsPlatformDetail(platform: DeliveryPlatform): boolean {
+  return platform === "线下超市" || platform === "其他平台";
+}
+
 Page({
   data: {
     itemId: "",
     item: null as any,
     sortMode: "priceAsc" as SortMode,
     sortedBills: [] as Array<
-      BillRecord & { displayDate: string; platformMark: string; platformColor: string; deliveryLabel: string }
+      BillRecord & {
+        displayDate: string;
+        displayPlatform: string;
+        platformMark: string;
+        platformColor: string;
+        selected: boolean;
+      }
     >,
+    selectedBillMap: {} as Record<string, boolean>,
+    selectedBillCount: 0,
+    batchDeleteMode: false,
     unit: "",
     platforms,
     platformIndex: 0,
@@ -31,10 +53,12 @@ Page({
     form: {
       date: todayIso(),
       platform: "京东" as DeliveryPlatform,
+      platformDetail: "",
       price: "",
       quantity: "1"
     },
-    formDateText: formatDotDate(todayIso())
+    formDateText: formatDotDate(todayIso()),
+    requiresPlatformDetail: false
   },
 
   onLoad(options: any) {
@@ -64,8 +88,9 @@ Page({
     this.sortBills();
   },
 
-  sortBills() {
+  sortBills(selectedBillMap?: Record<string, boolean>) {
     if (!this.data.item) return;
+    const selectedMap = selectedBillMap || this.data.selectedBillMap;
     const bills = [...this.data.item.bills];
     if (this.data.sortMode === "priceAsc") bills.sort((a, b) => Number(a.price) - Number(b.price));
     if (this.data.sortMode === "priceDesc") bills.sort((a, b) => Number(b.price) - Number(a.price));
@@ -74,9 +99,10 @@ Page({
       sortedBills: bills.map((bill) => ({
         ...bill,
         displayDate: formatBillDate(bill.date),
+        displayPlatform: bill.platformDetail || bill.platform,
         platformMark: platformMark(bill.platform),
         platformColor: platformColors[bill.platform],
-        deliveryLabel: `${bill.platform === "线下超市" ? "线下" : bill.platform}${bill.platform === "线下超市" ? "0" : bill.platform === "京东" ? "2" : "3"}天`
+        selected: selectedMap[bill.id] === true
       }))
     });
   },
@@ -94,6 +120,75 @@ Page({
   },
 
   noop() {},
+
+  onRecordLongPress(event: any) {
+    const billId = event.currentTarget.dataset.id;
+    if (!billId) return;
+    wx.showModal({
+      title: "删除记录",
+      content: "确定删除这条购买记录吗？",
+      cancelText: "取消",
+      confirmText: "删除",
+      confirmColor: "#e64340",
+      success: (res) => {
+        if (!res.confirm) return;
+        deleteBill(billId);
+        this.refresh();
+        wx.showToast({ title: "已删除" });
+      }
+    });
+  },
+
+  toggleBatchDelete() {
+    const batchDeleteMode = !this.data.batchDeleteMode;
+    this.setData({
+      batchDeleteMode,
+      selectedBillMap: {},
+      selectedBillCount: 0
+    });
+    this.sortBills({});
+  },
+
+  toggleBillSelection(event: any) {
+    const billId = event.currentTarget.dataset.id;
+    if (!billId) return;
+    const selectedBillMap = { ...this.data.selectedBillMap };
+    if (selectedBillMap[billId]) {
+      delete selectedBillMap[billId];
+    } else {
+      selectedBillMap[billId] = true;
+    }
+    this.setData({
+      selectedBillMap,
+      selectedBillCount: Object.keys(selectedBillMap).length
+    });
+    this.sortBills(selectedBillMap);
+  },
+
+  confirmBatchDeleteBills() {
+    const billIds = Object.keys(this.data.selectedBillMap);
+    if (!billIds.length) {
+      wx.showToast({ title: "请选择记录", icon: "none" });
+      return;
+    }
+    wx.showModal({
+      title: "删除确认",
+      content: `确定删除选中的${billIds.length}条记录吗？`,
+      confirmText: "删除",
+      confirmColor: "#e64340",
+      success: (res) => {
+        if (!res.confirm) return;
+        deleteBills(billIds);
+        this.setData({
+          batchDeleteMode: false,
+          selectedBillMap: {},
+          selectedBillCount: 0
+        });
+        this.refresh();
+        wx.showToast({ title: "已删除" });
+      }
+    });
+  },
 
   onDateChange(event: any) {
     const selectedDate = event.detail.value;
@@ -116,8 +211,14 @@ Page({
     const platform = platforms[Number(event.detail.value)];
     this.setData({
       platformIndex: Number(event.detail.value),
-      "form.platform": platform
+      "form.platform": platform,
+      "form.platformDetail": needsPlatformDetail(platform) ? this.data.form.platformDetail : "",
+      requiresPlatformDetail: needsPlatformDetail(platform)
     });
+  },
+
+  onPlatformDetailInput(event: any) {
+    this.setData({ "form.platformDetail": event.detail.value });
   },
 
   onPriceInput(event: any) {
@@ -135,14 +236,25 @@ Page({
       wx.showToast({ title: "请填写价格", icon: "none" });
       return;
     }
+    if (quantity <= 0) {
+      wx.showToast({ title: "请填写数量", icon: "none" });
+      return;
+    }
+    const platformDetail = String(this.data.form.platformDetail || "").trim();
+    if (needsPlatformDetail(this.data.form.platform) && !platformDetail) {
+      wx.showToast({ title: "请填写具体地点", icon: "none" });
+      return;
+    }
     addBill(this.data.itemId, {
       date: this.data.form.date,
       platform: this.data.form.platform,
+      platformDetail,
       price,
       quantity
     });
     this.setData({
       recordModalVisible: false,
+      "form.platformDetail": "",
       "form.price": "",
       "form.quantity": "1"
     });

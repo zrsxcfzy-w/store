@@ -28,6 +28,7 @@ export interface BillRecord {
   id: string;
   date: string;
   platform: DeliveryPlatform;
+  platformDetail?: string;
   price: number;
   quantity: number;
 }
@@ -317,6 +318,38 @@ export function deleteBill(billId: string): void {
   house.items = house.items.map((item) => ({
     ...item,
     bills: item.bills.filter((bill) => bill.id !== billId)
+  }));
+  saveHouse(house);
+}
+
+export function deleteBills(billIds: string[]): void {
+  const ids = new Set(billIds);
+  if (!ids.size) return;
+  const house = currentHouse();
+  house.items = house.items.map((item) => ({
+    ...item,
+    bills: item.bills.filter((bill) => !ids.has(bill.id))
+  }));
+  saveHouse(house);
+}
+
+export function deleteBillsByDate(date: string): void {
+  if (!date) return;
+  const house = currentHouse();
+  house.items = house.items.map((item) => ({
+    ...item,
+    bills: item.bills.filter((bill) => bill.date !== date)
+  }));
+  saveHouse(house);
+}
+
+export function deleteBillsByDates(dates: string[]): void {
+  const selectedDates = new Set(dates);
+  if (!selectedDates.size) return;
+  const house = currentHouse();
+  house.items = house.items.map((item) => ({
+    ...item,
+    bills: item.bills.filter((bill) => !selectedDates.has(bill.date))
   }));
   saveHouse(house);
 }

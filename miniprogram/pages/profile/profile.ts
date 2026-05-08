@@ -46,34 +46,25 @@ Page({
     wx.showToast({ title: `${name}后续讨论`, icon: "none" });
   },
 
-  switchHouse() {
-    wx.showActionSheet({
-      itemList: ["创建新的家庭仓库", "切换到其他家庭仓库"],
-      success: (res: any) => {
-        if (res.tapIndex === 0) {
-          switchToNewHouse();
-          wx.showToast({ title: "已创建家庭仓库" });
-          wx.redirectTo({ url: "/pages/index/index" });
-          return;
-        }
-        this.openSwitchHouseModal();
-      }
-    });
+  createNewHouse() {
+    switchToNewHouse();
+    wx.showToast({ title: "已创建仓库" });
+    wx.redirectTo({ url: "/pages/index/index" });
   },
 
   openSwitchHouseModal() {
     const current = currentHouse();
     const houses = listHouses().filter((house) => house.id !== current.id);
     if (!houses.length) {
-      wx.showToast({ title: "暂无其他家庭仓库", icon: "none" });
+      wx.showToast({ title: "暂无其他仓库", icon: "none" });
       return;
     }
     this.setData({
       switchModalVisible: true,
       switchableHouses: houses,
-      switchableHouseNames: houses.map((house) => house.name || "未命名家庭仓库"),
+      switchableHouseNames: houses.map((house) => house.name || "未命名仓库"),
       switchHouseIndex: 0,
-      selectedSwitchHouseName: houses[0]?.name || "未命名家庭仓库"
+      selectedSwitchHouseName: houses[0]?.name || "未命名仓库"
     });
   },
 
@@ -88,7 +79,7 @@ Page({
     const house = this.data.switchableHouses[switchHouseIndex];
     this.setData({
       switchHouseIndex,
-      selectedSwitchHouseName: house?.name || "未命名家庭仓库"
+      selectedSwitchHouseName: house?.name || "未命名仓库"
     });
   },
 
@@ -100,7 +91,7 @@ Page({
     }
     switchToHouse(house.id);
     this.setData({ switchModalVisible: false });
-    wx.showToast({ title: "已切换家庭仓库" });
+    wx.showToast({ title: "已切换仓库" });
     wx.redirectTo({ url: "/pages/index/index" });
   },
 

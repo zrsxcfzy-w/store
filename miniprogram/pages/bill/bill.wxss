@@ -3,7 +3,7 @@
 }
 
 .bill-page .header-title {
-  max-width: calc(100% - 280rpx);
+  max-width: calc(100% - 386rpx);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -15,16 +15,32 @@
   justify-content: flex-start;
 }
 
-.header-add-button {
+.header-actions {
   position: absolute;
   right: 0;
   top: 4rpx;
-  width: 172rpx;
+  display: flex;
+  gap: 10rpx;
+  z-index: 1;
+}
+
+.header-add-button,
+.header-batch-button {
   height: 56rpx;
   line-height: 56rpx;
   border-radius: 12rpx;
-  font-size: 22rpx;
-  z-index: 1;
+  font-size: 21rpx;
+}
+
+.header-add-button {
+  width: 168rpx;
+}
+
+.header-batch-button {
+  width: 126rpx;
+  background: #f0f0f0;
+  color: #333333;
+  font-weight: 700;
 }
 
 .sort-row {
@@ -93,6 +109,32 @@
   text-align: right;
 }
 
+.batch-bar {
+  min-height: 68rpx;
+  margin: 0 0 18rpx;
+  padding: 0 18rpx;
+  border-radius: 12rpx;
+  background: #fff4f4;
+  color: #c93636;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18rpx;
+  font-size: 23rpx;
+  font-weight: 700;
+}
+
+.danger-button {
+  width: 154rpx;
+  height: 58rpx;
+  line-height: 58rpx;
+  border-radius: 12rpx;
+  background: #e64340;
+  color: #ffffff;
+  font-size: 22rpx;
+  font-weight: 700;
+}
+
 .form,
 .record-modal {
   padding: 18rpx;
@@ -155,6 +197,29 @@
   align-items: center;
 }
 
+.record.selecting {
+  grid-template-columns: 44rpx 1.18fr 1.28fr 0.9fr 0.62fr;
+}
+
+.select-box {
+  width: 38rpx;
+  height: 38rpx;
+  border-radius: 8rpx;
+  border: 2rpx solid #d4d4d4;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24rpx;
+  font-weight: 800;
+  box-sizing: border-box;
+}
+
+.select-box.selected {
+  border-color: #e64340;
+  background: #e64340;
+}
+
 .record-date {
   color: #333333;
   font-size: 23rpx;
@@ -193,23 +258,6 @@
   display: block;
   color: #333333;
   font-size: 23rpx;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.delivery-tag {
-  margin-top: 8rpx;
-  height: 36rpx;
-  padding: 0 14rpx;
-  border-radius: 999rpx;
-  background: #f4f4f4;
-  color: #777777;
-  font-size: 20rpx;
-  display: inline-flex;
-  align-items: center;
-  max-width: 100%;
-  box-sizing: border-box;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
