@@ -1,5 +1,5 @@
-import { BillRecord, SortMode, addBill, formatBillDate, getItem } from "../../services/store";
-import { DeliveryPlatform, compareIsoDate, formatChineseDate, todayIso } from "../../utils/date";
+import { BillRecord, SortMode, addBill, formatBillDate, getItem, sortBillsByDateDescPriceDesc } from "../../services/store";
+import { DeliveryPlatform, compareIsoDate, formatDotDate, todayIso } from "../../utils/date";
 
 const platforms: DeliveryPlatform[] = ["京东", "淘宝", "拼多多", "线下超市", "其他平台"];
 const platformColors: Record<DeliveryPlatform, string> = {
@@ -28,7 +28,7 @@ Page({
       price: "",
       quantity: "1"
     },
-    formDateText: formatChineseDate(todayIso())
+    formDateText: formatDotDate(todayIso())
   },
 
   onLoad(options: any) {
@@ -40,7 +40,7 @@ Page({
     if (compareIsoDate(this.data.form.date, today) > 0) {
       this.setData({
         "form.date": today,
-        formDateText: formatChineseDate(today)
+        formDateText: formatDotDate(today)
       });
     }
     this.refresh();
@@ -63,9 +63,7 @@ Page({
     const bills = [...this.data.item.bills];
     if (this.data.sortMode === "priceAsc") bills.sort((a, b) => Number(a.price) - Number(b.price));
     if (this.data.sortMode === "priceDesc") bills.sort((a, b) => Number(b.price) - Number(a.price));
-    if (this.data.sortMode === "timeDesc") {
-      bills.sort((a, b) => new Date(`${b.date}T00:00:00`).getTime() - new Date(`${a.date}T00:00:00`).getTime());
-    }
+    if (this.data.sortMode === "timeDesc") bills.sort(sortBillsByDateDescPriceDesc);
     this.setData({
       sortedBills: bills.map((bill) => ({
         ...bill,
@@ -97,14 +95,14 @@ Page({
     if (compareIsoDate(selectedDate, today) > 0) {
       this.setData({
         "form.date": today,
-        formDateText: formatChineseDate(today)
+        formDateText: formatDotDate(today)
       });
       wx.showToast({ title: "当前填写的时间有误", icon: "none" });
       return;
     }
     this.setData({
       "form.date": selectedDate,
-      formDateText: formatChineseDate(selectedDate)
+      formDateText: formatDotDate(selectedDate)
     });
   },
 

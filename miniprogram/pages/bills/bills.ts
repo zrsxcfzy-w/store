@@ -1,5 +1,12 @@
-import { BillRecord, InventoryItem, addBill, currentHouse, getAllBillViews } from "../../services/store";
-import { DeliveryPlatform, compareIsoDate, formatChineseDate, todayIso } from "../../utils/date";
+import {
+  BillRecord,
+  InventoryItem,
+  addBill,
+  currentHouse,
+  getAllBillViews,
+  sortBillsByDateDescPriceDesc
+} from "../../services/store";
+import { DeliveryPlatform, compareIsoDate, formatDotDate, todayIso } from "../../utils/date";
 
 const platforms: DeliveryPlatform[] = ["京东", "淘宝", "拼多多", "线下超市", "其他平台"];
 const platformColors: Record<DeliveryPlatform, string> = {
@@ -33,28 +40,31 @@ Page({
       price: "",
       quantity: "1"
     },
-    formDateText: formatChineseDate(todayIso())
+    formDateText: formatDotDate(todayIso())
   },
 
   onShow() {
     const house = currentHouse();
     const today = todayIso();
     const itemIndex = Math.min(this.data.itemIndex, Math.max(house.items.length - 1, 0));
+    const bills = getAllBillViews()
+      .map((bill) => ({
+        ...bill,
+        platformMark: bill.platform.slice(0, 1),
+        platformColor: platformColors[bill.platform]
+      }))
+      .sort(sortBillsByDateDescPriceDesc);
     if (compareIsoDate(this.data.form.date, today) > 0) {
       this.setData({
         "form.date": today,
-        formDateText: formatChineseDate(today)
+        formDateText: formatDotDate(today)
       });
     }
     this.setData({
       items: house.items,
       itemIndex,
       selectedItemName: house.items[itemIndex]?.name || "",
-      bills: getAllBillViews().map((bill) => ({
-        ...bill,
-        platformMark: bill.platform.slice(0, 1),
-        platformColor: platformColors[bill.platform]
-      }))
+      bills
     });
   },
 
@@ -86,14 +96,14 @@ Page({
     if (compareIsoDate(selectedDate, today) > 0) {
       this.setData({
         "form.date": today,
-        formDateText: formatChineseDate(today)
+        formDateText: formatDotDate(today)
       });
       wx.showToast({ title: "当前填写的时间有误", icon: "none" });
       return;
     }
     this.setData({
       "form.date": selectedDate,
-      formDateText: formatChineseDate(selectedDate)
+      formDateText: formatDotDate(selectedDate)
     });
   },
 

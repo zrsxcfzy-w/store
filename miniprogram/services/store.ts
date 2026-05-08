@@ -5,7 +5,7 @@ import {
   compareIsoDate,
   daysBetween,
   estimateText,
-  formatChineseDate,
+  formatDotDate,
   todayIso
 } from "../utils/date";
 
@@ -251,6 +251,12 @@ export function sortItems(a: ItemView, b: ItemView): number {
   return compareIsoDate(a.nextSuggestedDate, b.nextSuggestedDate);
 }
 
+export function sortBillsByDateDescPriceDesc<T extends Pick<BillRecord, "date" | "price">>(a: T, b: T): number {
+  const dateOrder = compareIsoDate(b.date, a.date);
+  if (dateOrder !== 0) return dateOrder;
+  return Number(b.price || 0) - Number(a.price || 0);
+}
+
 export function getItem(itemId: string): ItemView | undefined {
   return getItemViews().find((item) => item.id === itemId);
 }
@@ -351,7 +357,7 @@ export function getAllBillViews(): Array<BillRecord & { itemName: string; unit: 
         displayDate: formatBillDate(bill.date)
       }))
     )
-    .sort((a, b) => compareIsoDate(b.date, a.date));
+    .sort(sortBillsByDateDescPriceDesc);
 }
 
 function getShoppingListItems(): ItemView[] {
@@ -391,5 +397,5 @@ export function reminderListText(): string {
 }
 
 export function formatBillDate(isoDate: string): string {
-  return formatChineseDate(isoDate);
+  return formatDotDate(isoDate);
 }

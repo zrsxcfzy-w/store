@@ -47,6 +47,7 @@
         >
           {{item.name}}
         </view>
+        <button class="add-button" bindtap="goEdit">+</button>
       </view>
 
       <scroll-view scroll-y class="item-list">
@@ -71,10 +72,8 @@
             <view class="location-pill" style="background-color: {{item.locationColor}};">
               <text>{{item.displayLocation}}</text>
             </view>
+            <view wx:if="{{item.stock <= 2}}" class="low-stock-callout">库存较少</view>
             <view wx:if="{{item.nextSuggestedText === '已到期'}}" class="expired-callout">已到期,请及时采购</view>
-            <view wx:if="{{item.nextSuggestedText === '已到期'}}" class="warning-holder">
-              <image class="warning-icon" src="/assets/warning.png" mode="aspectFit"></image>
-            </view>
           </view>
         </view>
       </scroll-view>
@@ -106,7 +105,6 @@
       <text>我的</text>
     </view>
   </view>
-  <button class="add-button" bindtap="goEdit">+</button>
 
   <view wx:if="{{manualVisible}}" class="modal-mask">
     <view class="manual-panel">

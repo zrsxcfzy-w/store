@@ -26,6 +26,12 @@ export function formatChineseDate(isoDate: string): string {
   return `${year}年${month}月${day}日`;
 }
 
+export function formatDotDate(isoDate: string): string {
+  if (!isoDate) return "暂无记录";
+  const [year, month, day] = isoDate.split("-");
+  return `${year}.${month}.${day}`;
+}
+
 export function daysBetween(startIso: string, endIso: string): number {
   const start = new Date(`${startIso}T00:00:00`);
   const end = new Date(`${endIso}T00:00:00`);
