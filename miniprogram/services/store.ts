@@ -251,9 +251,15 @@ export function sortItems(a: ItemView, b: ItemView): number {
   return compareIsoDate(a.nextSuggestedDate, b.nextSuggestedDate);
 }
 
-export function sortBillsByDateDescPriceDesc<T extends Pick<BillRecord, "date" | "price">>(a: T, b: T): number {
+export function sortBillsByDateDescPriceDesc<
+  T extends Pick<BillRecord, "date" | "price">
+>(a: T, b: T): number {
   const dateOrder = compareIsoDate(b.date, a.date);
-  if (dateOrder !== 0) return dateOrder;
+
+  if (dateOrder !== 0) {
+    return dateOrder;
+  }
+
   return Number(b.price || 0) - Number(a.price || 0);
 }
 
@@ -355,8 +361,15 @@ export function switchToNewHouse(): void {
   saveStore(store);
 }
 
-export function getAllBillViews(): Array<BillRecord & { itemName: string; unit: string; displayDate: string }> {
+export function getAllBillViews(): Array<
+  BillRecord & {
+    itemName: string;
+    unit: string;
+    displayDate: string;
+  }
+> {
   const house = currentHouse();
+
   return house.items
     .flatMap((item) =>
       item.bills.map((bill) => ({

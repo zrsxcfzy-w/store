@@ -4,8 +4,7 @@ import {
   addBill,
   currentHouse,
   deleteBill,
-  getAllBillViews,
-  sortBillsByDateDescPriceDesc
+  getAllBillViews
 } from "../../services/store";
 import { DeliveryPlatform, compareIsoDate, formatDotDate, todayIso } from "../../utils/date";
 
@@ -59,8 +58,7 @@ Page({
         ...bill,
         platformMark: platformMark(bill.platform),
         platformColor: platformColors[bill.platform]
-      }))
-      .sort(sortBillsByDateDescPriceDesc);
+      }));
     if (compareIsoDate(this.data.form.date, today) > 0) {
       this.setData({
         "form.date": today,
