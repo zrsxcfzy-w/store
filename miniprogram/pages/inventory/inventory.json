@@ -1,3 +1,6 @@
 {
-  "navigationBarTitleText": "库存"
+  "navigationBarTitleText": "库存",
+  "usingComponents": {
+    "onboarding-overlay": "/components/onboarding-overlay/onboarding-overlay"
+  }
 }

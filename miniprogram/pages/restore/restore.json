@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "数据恢复",
+  "usingComponents": {
+    "onboarding-overlay": "/components/onboarding-overlay/onboarding-overlay"
+  }
+}

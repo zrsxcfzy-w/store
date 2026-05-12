@@ -58,4 +58,18 @@
       <button bindtap="goCycle" class="outline-action blue">▣ 周期</button>
     </view>
   </view>
+
+  <onboarding-overlay
+    visible="{{onboarding.visible}}"
+    target="{{onboarding.target}}"
+    step-text="{{onboarding.stepText}}"
+    title="{{onboarding.title}}"
+    text="{{onboarding.text}}"
+    primary-text="{{onboarding.primaryText}}"
+    secondary-text="{{onboarding.secondaryText}}"
+    show-secondary="{{onboarding.showSecondary}}"
+    finish-mode="{{onboarding.finishMode}}"
+    bind:primary="onOnboardingPrimary"
+    bind:secondary="onOnboardingSecondary"
+  />
 </view>

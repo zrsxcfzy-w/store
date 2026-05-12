@@ -1,0 +1,83 @@
+.tool-page {
+  background: #fffdf9;
+  padding-bottom: 52rpx;
+}
+
+.summary-card {
+  margin-top: 24rpx;
+  padding: 28rpx;
+}
+
+.summary-title {
+  font-size: 30rpx;
+  font-weight: 800;
+  margin-bottom: 22rpx;
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14rpx;
+  margin-bottom: 20rpx;
+}
+
+.summary-grid view {
+  min-height: 116rpx;
+  border-radius: 14rpx;
+  background: #f7fbf5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.summary-number {
+  font-size: 42rpx;
+  font-weight: 800;
+  color: #4fad68;
+}
+
+.summary-label,
+.summary-line {
+  color: #666666;
+  font-size: 24rpx;
+}
+
+.summary-line {
+  line-height: 1.8;
+}
+
+.action-list {
+  margin-top: 28rpx;
+  display: grid;
+  gap: 18rpx;
+}
+
+.primary-action {
+  height: 82rpx;
+  line-height: 82rpx;
+  border-radius: 16rpx;
+  font-size: 27rpx;
+  font-weight: 800;
+}
+
+.cloud-button {
+  background: #5daee4;
+  color: #ffffff;
+}
+
+.notice {
+  margin-top: 28rpx;
+  padding: 24rpx;
+  display: grid;
+  gap: 12rpx;
+  color: #555555;
+  font-size: 24rpx;
+  line-height: 1.55;
+}
+
+.notice-title {
+  color: #222222;
+  font-size: 28rpx;
+  font-weight: 800;
+}

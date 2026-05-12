@@ -1,0 +1,48 @@
+<view class="page tool-page">
+  <view class="page-header">
+    <view class="back-icon" bindtap="goBack">‹</view>
+    <text>数据备份</text>
+  </view>
+
+  <view class="summary-card panel">
+    <view class="summary-title">当前数据</view>
+    <view class="summary-grid">
+      <view>
+        <text class="summary-number">{{summary.houseCount}}</text>
+        <text class="summary-label">仓库</text>
+      </view>
+      <view>
+        <text class="summary-number">{{summary.itemCount}}</text>
+        <text class="summary-label">物品</text>
+      </view>
+      <view>
+        <text class="summary-number">{{summary.billCount}}</text>
+        <text class="summary-label">账单</text>
+      </view>
+    </view>
+    <view class="summary-line">当前仓库：{{summary.currentHouseName}}</view>
+    <view class="summary-line">生成时间：{{createdAtText}}</view>
+  </view>
+
+  <view class="action-list">
+    <button class="primary-action green-button" bindtap="exportLocal">导出本地备份</button>
+    <button class="primary-action cloud-button" loading="{{cloudLoading}}" bindtap="backupToCloud">备份到云端</button>
+  </view>
+
+  <view class="notice panel">
+    <view class="notice-title">备份说明</view>
+    <text>本地备份会生成 JSON 文件，并同步复制备份文本到剪贴板。</text>
+    <text>云端备份为手动快照，会保留最近 10 个版本。</text>
+    <text>自定义本地图片跨设备可能无法恢复，内置图片不受影响。</text>
+  </view>
+
+  <onboarding-overlay
+    visible="{{hintVisible}}"
+    target="page-hint"
+    title="备份前先确认数据范围"
+    text="备份会导出当前程序中的仓库、物品和账单。建议在大量修改前先备份，恢复数据时再仔细确认是否覆盖当前仓库。"
+    primary-text="知道了"
+    show-secondary="{{false}}"
+    bind:primary="closeHint"
+  />
+</view>

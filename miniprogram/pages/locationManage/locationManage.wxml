@@ -1,0 +1,27 @@
+<view class="page manage-page">
+  <view class="page-header">
+    <view class="back-icon" bindtap="goBack">‹</view>
+    <text>位置管理</text>
+  </view>
+
+  <button class="add-action green-button" bindtap="addLocation">新增位置</button>
+
+  <view wx:for="{{locations}}" wx:key="id" class="manage-row panel">
+    <view class="row-main">
+      <view class="name-wrap">
+        <view class="color-dot" style="background: {{item.color}};"></view>
+        <text class="row-name">{{item.name}}</text>
+      </view>
+      <text class="row-meta">{{item.count}} 个物品</text>
+    </view>
+    <view class="row-actions">
+      <button data-id="{{item.id}}" data-direction="up" bindtap="moveLocation">上移</button>
+      <button data-id="{{item.id}}" data-direction="down" bindtap="moveLocation">下移</button>
+      <button data-id="{{item.id}}" data-name="{{item.name}}" data-color="{{item.color}}" bindtap="editLocation">改名</button>
+      <button data-id="{{item.id}}" data-name="{{item.name}}" data-color="{{item.color}}" bindtap="changeColor">改色</button>
+      <button class="danger-text" data-id="{{item.id}}" data-name="{{item.name}}" data-count="{{item.count}}" bindtap="removeLocation">删除</button>
+    </view>
+  </view>
+
+  <view class="notice panel">当前保持“位置 + 具体位置”的轻量模型。删除已使用位置时，需要先迁移物品。</view>
+</view>

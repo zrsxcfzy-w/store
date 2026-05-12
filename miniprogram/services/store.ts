@@ -10,8 +10,27 @@ import {
 } from "../utils/date";
 
 const STORE_KEY = "HOME_INVENTORY_STORE_V1";
+const SAFETY_BACKUP_KEY = "HOME_INVENTORY_SAFETY_BACKUPS_V1";
+const BACKUP_SCHEMA_VERSION = 1;
+const APP_VERSION = "1.0.0";
+const LOCATION_PALETTE_VERSION = 2;
 
 export type SortMode = "priceAsc" | "priceDesc" | "timeDesc";
+
+export const LOCATION_COLOR_PALETTE = [
+  "#d991bc",
+  "#ee88a6",
+  "#f2b06f",
+  "#dbe67a",
+  "#7bdc31",
+  "#b7e7b8",
+  "#93dccd",
+  "#73c8d2",
+  "#8ecfe1",
+  "#b8d7eb",
+  "#9fa9df",
+  "#c3a3e6"
+];
 
 export interface LocationTag {
   id: string;
@@ -56,12 +75,51 @@ export interface House {
   items: InventoryItem[];
 }
 
+export type OnboardingHintKey = "inventory" | "bills" | "profile" | "cycle" | "backup";
+
+export interface OnboardingHints {
+  inventorySeen: boolean;
+  billsSeen: boolean;
+  profileSeen: boolean;
+  cycleSeen: boolean;
+  backupSeen: boolean;
+}
+
+export interface OnboardingState {
+  coreFinished: boolean;
+  skippedCore: boolean;
+  coreStep: number;
+  hints: OnboardingHints;
+}
+
 export interface InventoryStore {
   currentHouseId: string;
-  hasReadManual: boolean;
-  hasFinishedGuide: boolean;
+  hasReadManual?: boolean;
+  hasFinishedGuide?: boolean;
+  locationPaletteVersion?: number;
+  onboarding: OnboardingState;
   houses: House[];
+  deletedHouses?: House[];
 }
+
+export interface BackupSummary {
+  houseCount: number;
+  itemCount: number;
+  billCount: number;
+  currentHouseName: string;
+}
+
+export interface BackupSnapshot {
+  schemaVersion: number;
+  createdAt: string;
+  appVersion: string;
+  currentHouseId: string;
+  houses: House[];
+  deletedHouses?: House[];
+  summary: BackupSummary;
+}
+
+export type RestoreMode = "newHouse" | "overwriteCurrent";
 
 export interface ItemView extends InventoryItem {
   locationName: string;
@@ -98,11 +156,11 @@ function defaultItemImage(name: string): string {
 function seedStore(): InventoryStore {
   const houseId = "house_default";
   const locations: LocationTag[] = [
-    { id: "loc_table", name: "桌子", color: "#f7a46f" },
-    { id: "loc_closet", name: "衣柜", color: "#f2cf5b" },
-    { id: "loc_kitchen", name: "厨房", color: "#a4d870" },
-    { id: "loc_bath", name: "卫生间", color: "#7fc8e8" },
-    { id: "loc_other", name: "其他", color: "#b79be6" }
+    { id: "loc_table", name: "桌子", color: LOCATION_COLOR_PALETTE[0] },
+    { id: "loc_closet", name: "衣柜", color: LOCATION_COLOR_PALETTE[1] },
+    { id: "loc_kitchen", name: "厨房", color: LOCATION_COLOR_PALETTE[2] },
+    { id: "loc_bath", name: "卫生间", color: LOCATION_COLOR_PALETTE[3] },
+    { id: "loc_other", name: "其他", color: LOCATION_COLOR_PALETTE[4] }
   ];
   const categories: CategoryTag[] = [
     { id: "cat_wash", name: "洗漱用品" },
@@ -112,8 +170,7 @@ function seedStore(): InventoryStore {
   ];
   return {
     currentHouseId: houseId,
-    hasReadManual: false,
-    hasFinishedGuide: false,
+    onboarding: defaultOnboarding(),
     houses: [
       {
         id: houseId,
@@ -121,7 +178,7 @@ function seedStore(): InventoryStore {
         avatarUrl: "",
         locations,
         categories,
-        units: ["件", "包", "瓶", "盒", "卷", "袋", "箱", "个"],
+        units: ["件", "包", "瓶", "盒", "卷", "袋", "箱", "个", "斤", "kg", "ml", "L"],
         items: [
           {
             id: "item_paper",
@@ -159,16 +216,90 @@ function seedStore(): InventoryStore {
   };
 }
 
+function defaultOnboarding(): OnboardingState {
+  return {
+    coreFinished: false,
+    skippedCore: false,
+    coreStep: 0,
+    hints: {
+      inventorySeen: false,
+      billsSeen: false,
+      profileSeen: false,
+      cycleSeen: false,
+      backupSeen: false
+    }
+  };
+}
+
+function applyLocationPalette(house: House): House {
+  return {
+    ...house,
+    locations: house.locations.map((location, index) => ({
+      ...location,
+      color: LOCATION_COLOR_PALETTE[index % LOCATION_COLOR_PALETTE.length]
+    }))
+  };
+}
+
+function normalizeOnboarding(store: InventoryStore): InventoryStore {
+  const defaults = defaultOnboarding();
+  const legacyFinished = store.hasFinishedGuide === true;
+  const legacySkipped = store.hasReadManual === true && store.hasFinishedGuide !== true;
+  const onboarding = store.onboarding || defaults;
+  return {
+    ...store,
+    onboarding: {
+      coreFinished: onboarding.coreFinished || legacyFinished,
+      skippedCore: onboarding.skippedCore || legacySkipped,
+      coreStep: Number(onboarding.coreStep || 0),
+      hints: {
+        ...defaults.hints,
+        ...(onboarding.hints || {})
+      }
+    }
+  };
+}
+
+function normalizeStore(store: InventoryStore): InventoryStore {
+  const onboardingNormalized = normalizeOnboarding(store);
+  const shouldApplyPalette = onboardingNormalized.locationPaletteVersion !== LOCATION_PALETTE_VERSION;
+  const houses = shouldApplyPalette
+    ? onboardingNormalized.houses.map(applyLocationPalette)
+    : onboardingNormalized.houses;
+  const deletedHouses = shouldApplyPalette
+    ? (onboardingNormalized.deletedHouses || []).map(applyLocationPalette)
+    : onboardingNormalized.deletedHouses || [];
+  const currentHouseId = houses.some((house) => house.id === onboardingNormalized.currentHouseId)
+    ? onboardingNormalized.currentHouseId
+    : houses[0]?.id || onboardingNormalized.currentHouseId;
+
+  return {
+    ...onboardingNormalized,
+    locationPaletteVersion: LOCATION_PALETTE_VERSION,
+    currentHouseId,
+    houses,
+    deletedHouses
+  };
+}
+
 export function loadStore(): InventoryStore {
   const stored = wx.getStorageSync(STORE_KEY);
-  if (stored) return stored;
+  if (stored) {
+    const normalized = normalizeStore(stored);
+    if (JSON.stringify(stored) !== JSON.stringify(normalized)) saveStore(normalized);
+    return normalized;
+  }
   const seeded = seedStore();
   saveStore(seeded);
   return seeded;
 }
 
 export function saveStore(store: InventoryStore): void {
-  wx.setStorageSync(STORE_KEY, store);
+  wx.setStorageSync(STORE_KEY, {
+    ...store,
+    locationPaletteVersion: store.locationPaletteVersion || LOCATION_PALETTE_VERSION,
+    deletedHouses: store.deletedHouses || []
+  });
 }
 
 export function currentHouse(): House {
@@ -178,6 +309,10 @@ export function currentHouse(): House {
 
 export function listHouses(): House[] {
   return loadStore().houses;
+}
+
+export function listDeletedHouses(): House[] {
+  return loadStore().deletedHouses || [];
 }
 
 export function switchToHouse(houseId: string): void {
@@ -195,13 +330,190 @@ export function saveHouse(nextHouse: House): void {
 
 export function setManualRead(): void {
   const store = loadStore();
-  store.hasReadManual = true;
+  store.onboarding.skippedCore = true;
   saveStore(store);
 }
 
 export function setGuideFinished(): void {
   const store = loadStore();
-  store.hasFinishedGuide = true;
+  store.onboarding.coreFinished = true;
+  store.onboarding.skippedCore = false;
+  store.onboarding.coreStep = 0;
+  saveStore(store);
+}
+
+export function resetManualAndGuide(): void {
+  const store = loadStore();
+  store.onboarding = defaultOnboarding();
+  saveStore(store);
+}
+
+export function getOnboarding(): OnboardingState {
+  return loadStore().onboarding;
+}
+
+export function setCoreOnboardingStep(step: number): void {
+  const store = loadStore();
+  store.onboarding.coreStep = Math.max(0, step);
+  saveStore(store);
+}
+
+export function skipCoreOnboarding(): void {
+  const store = loadStore();
+  store.onboarding.skippedCore = true;
+  store.onboarding.coreStep = 0;
+  saveStore(store);
+}
+
+export function finishCoreOnboarding(): void {
+  setGuideFinished();
+}
+
+function hintFlagName(key: OnboardingHintKey): keyof OnboardingHints {
+  const map: Record<OnboardingHintKey, keyof OnboardingHints> = {
+    inventory: "inventorySeen",
+    bills: "billsSeen",
+    profile: "profileSeen",
+    cycle: "cycleSeen",
+    backup: "backupSeen"
+  };
+  return map[key];
+}
+
+export function shouldShowOnboardingHint(key: OnboardingHintKey): boolean {
+  const flag = hintFlagName(key);
+  return !loadStore().onboarding.hints[flag];
+}
+
+export function markOnboardingHintSeen(key: OnboardingHintKey): void {
+  const store = loadStore();
+  store.onboarding.hints[hintFlagName(key)] = true;
+  saveStore(store);
+}
+
+function clone<T>(value: T): T {
+  return JSON.parse(JSON.stringify(value));
+}
+
+function backupSummary(store: InventoryStore): BackupSummary {
+  const itemCount = store.houses.reduce((sum, house) => sum + house.items.length, 0);
+  const billCount = store.houses.reduce(
+    (sum, house) => sum + house.items.reduce((itemSum, item) => itemSum + item.bills.length, 0),
+    0
+  );
+  const current = store.houses.find((house) => house.id === store.currentHouseId) || store.houses[0];
+  return {
+    houseCount: store.houses.length,
+    itemCount,
+    billCount,
+    currentHouseName: current?.name || "未命名仓库"
+  };
+}
+
+export function createBackupSnapshot(): BackupSnapshot {
+  const store = loadStore();
+  return {
+    schemaVersion: BACKUP_SCHEMA_VERSION,
+    createdAt: new Date().toISOString(),
+    appVersion: APP_VERSION,
+    currentHouseId: store.currentHouseId,
+    houses: clone(store.houses),
+    deletedHouses: clone(store.deletedHouses || []),
+    summary: backupSummary(store)
+  };
+}
+
+export function parseBackupSnapshot(text: string): BackupSnapshot {
+  const snapshot = JSON.parse(text) as BackupSnapshot;
+  if (!snapshot || snapshot.schemaVersion !== BACKUP_SCHEMA_VERSION || !Array.isArray(snapshot.houses)) {
+    throw new Error("备份文件格式不正确");
+  }
+  if (!snapshot.houses.length) {
+    throw new Error("备份中没有仓库数据");
+  }
+  return {
+    ...snapshot,
+    deletedHouses: snapshot.deletedHouses || [],
+    summary: snapshot.summary || backupSummary({
+      currentHouseId: snapshot.currentHouseId,
+      hasReadManual: true,
+      hasFinishedGuide: true,
+      onboarding: defaultOnboarding(),
+      houses: snapshot.houses,
+      deletedHouses: snapshot.deletedHouses || []
+    })
+  };
+}
+
+function cloneHouseAsNew(source: House): House {
+  const houseId = id("house");
+  const locationIdMap: Record<string, string> = {};
+  const categoryIdMap: Record<string, string> = {};
+  const locations = source.locations.map((location) => {
+    const nextId = id("loc");
+    locationIdMap[location.id] = nextId;
+    return { ...location, id: nextId };
+  });
+  const categories = source.categories.map((category) => {
+    const nextId = id("cat");
+    categoryIdMap[category.id] = nextId;
+    return { ...category, id: nextId };
+  });
+  return {
+    ...source,
+    id: houseId,
+    name: `${source.name || "未命名仓库"}(导入)`,
+    locations,
+    categories,
+    units: [...source.units],
+    items: source.items.map((item) => ({
+      ...item,
+      id: id("item"),
+      houseId,
+      locationId: locationIdMap[item.locationId] || locations[0]?.id || "",
+      categoryId: categoryIdMap[item.categoryId] || categories[0]?.id || "",
+      bills: item.bills.map((bill) => ({ ...bill, id: id("bill") }))
+    }))
+  };
+}
+
+function snapshotCurrentHouse(snapshot: BackupSnapshot): House {
+  return snapshot.houses.find((house) => house.id === snapshot.currentHouseId) || snapshot.houses[0];
+}
+
+function saveSafetyBackup(snapshot: BackupSnapshot): void {
+  const backups = wx.getStorageSync(SAFETY_BACKUP_KEY) || [];
+  wx.setStorageSync(SAFETY_BACKUP_KEY, [snapshot, ...backups].slice(0, 5));
+}
+
+export function restoreFromSnapshot(snapshot: BackupSnapshot, mode: RestoreMode): void {
+  const parsed = parseBackupSnapshot(JSON.stringify(snapshot));
+  const store = loadStore();
+  const importedDeletedHouses = (parsed.deletedHouses || []).map(cloneHouseAsNew);
+  if (mode === "newHouse") {
+    const sourceCurrentId = parsed.currentHouseId;
+    const importedHouses = parsed.houses.map(cloneHouseAsNew);
+    const currentIndex = parsed.houses.findIndex((house) => house.id === sourceCurrentId);
+    store.houses = [...store.houses, ...importedHouses];
+    store.deletedHouses = [...(store.deletedHouses || []), ...importedDeletedHouses];
+    store.currentHouseId = importedHouses[Math.max(0, currentIndex)]?.id || importedHouses[0].id;
+    saveStore(store);
+    return;
+  }
+
+  saveSafetyBackup(createBackupSnapshot());
+  const source = clone(snapshotCurrentHouse(parsed));
+  const current = currentHouse();
+  const nextHouse: House = {
+    ...source,
+    id: current.id,
+    name: source.name || current.name,
+    avatarUrl: source.avatarUrl || current.avatarUrl,
+    items: source.items.map((item) => ({ ...item, houseId: current.id }))
+  };
+  store.houses = store.houses.map((house) => (house.id === current.id ? nextHouse : house));
+  store.deletedHouses = [...(store.deletedHouses || []), ...importedDeletedHouses];
+  store.currentHouseId = current.id;
   saveStore(store);
 }
 
@@ -364,6 +676,155 @@ export function updateTagName(kind: "location" | "category", tagId: string, name
   saveHouse(house);
 }
 
+export function upsertCategory(input: Partial<CategoryTag>): string {
+  const house = currentHouse();
+  const name = (input.name || "").trim();
+  if (!name) return "";
+  const existing = input.id ? house.categories.find((tag) => tag.id === input.id) : undefined;
+  const duplicate = house.categories.find((tag) => tag.name === name && tag.id !== input.id);
+  if (duplicate) return duplicate.id;
+  if (existing) {
+    house.categories = house.categories.map((tag) => (tag.id === existing.id ? { ...tag, name } : tag));
+    saveHouse(house);
+    return existing.id;
+  }
+  const categoryId = id("cat");
+  house.categories = [...house.categories, { id: categoryId, name }];
+  saveHouse(house);
+  return categoryId;
+}
+
+export function mergeCategory(sourceId: string, targetId: string): void {
+  if (!sourceId || !targetId || sourceId === targetId) return;
+  const house = currentHouse();
+  house.items = house.items.map((item) => (item.categoryId === sourceId ? { ...item, categoryId: targetId } : item));
+  house.categories = house.categories.filter((tag) => tag.id !== sourceId);
+  saveHouse(house);
+}
+
+export function deleteCategory(categoryId: string, replacementId?: string): boolean {
+  const house = currentHouse();
+  const used = house.items.some((item) => item.categoryId === categoryId);
+  if (used && !replacementId) return false;
+  if (used && replacementId) {
+    mergeCategory(categoryId, replacementId);
+    return true;
+  }
+  house.categories = house.categories.filter((tag) => tag.id !== categoryId);
+  saveHouse(house);
+  return true;
+}
+
+export function upsertLocation(input: Partial<LocationTag>): string {
+  const house = currentHouse();
+  const name = (input.name || "").trim();
+  if (!name) return "";
+  const color = input.color || "#7fc8e8";
+  const existing = input.id ? house.locations.find((tag) => tag.id === input.id) : undefined;
+  const duplicate = house.locations.find((tag) => tag.name === name && tag.id !== input.id);
+  if (duplicate) return duplicate.id;
+  if (existing) {
+    house.locations = house.locations.map((tag) => (tag.id === existing.id ? { ...tag, name, color } : tag));
+    saveHouse(house);
+    return existing.id;
+  }
+  const locationId = id("loc");
+  house.locations = [...house.locations, { id: locationId, name, color }];
+  saveHouse(house);
+  return locationId;
+}
+
+export function mergeLocation(sourceId: string, targetId: string): void {
+  if (!sourceId || !targetId || sourceId === targetId) return;
+  const house = currentHouse();
+  house.items = house.items.map((item) => (item.locationId === sourceId ? { ...item, locationId: targetId } : item));
+  house.locations = house.locations.filter((tag) => tag.id !== sourceId);
+  saveHouse(house);
+}
+
+export function deleteLocation(locationId: string, replacementId?: string): boolean {
+  const house = currentHouse();
+  const used = house.items.some((item) => item.locationId === locationId);
+  if (used && !replacementId) return false;
+  if (used && replacementId) {
+    mergeLocation(locationId, replacementId);
+    return true;
+  }
+  house.locations = house.locations.filter((tag) => tag.id !== locationId);
+  saveHouse(house);
+  return true;
+}
+
+export function moveCategory(categoryId: string, direction: "up" | "down"): void {
+  const house = currentHouse();
+  const index = house.categories.findIndex((tag) => tag.id === categoryId);
+  const nextIndex = direction === "up" ? index - 1 : index + 1;
+  if (index < 0 || nextIndex < 0 || nextIndex >= house.categories.length) return;
+  const categories = [...house.categories];
+  [categories[index], categories[nextIndex]] = [categories[nextIndex], categories[index]];
+  house.categories = categories;
+  saveHouse(house);
+}
+
+export function moveLocation(locationId: string, direction: "up" | "down"): void {
+  const house = currentHouse();
+  const index = house.locations.findIndex((tag) => tag.id === locationId);
+  const nextIndex = direction === "up" ? index - 1 : index + 1;
+  if (index < 0 || nextIndex < 0 || nextIndex >= house.locations.length) return;
+  const locations = [...house.locations];
+  [locations[index], locations[nextIndex]] = [locations[nextIndex], locations[index]];
+  house.locations = locations;
+  saveHouse(house);
+}
+
+export function upsertUnit(unit: string, previousUnit?: string): string {
+  const house = currentHouse();
+  const name = unit.trim();
+  if (!name) return "";
+  if (previousUnit && previousUnit !== name) {
+    house.items = house.items.map((item) => (item.unit === previousUnit ? { ...item, unit: name } : item));
+    house.units = house.units.map((entry) => (entry === previousUnit ? name : entry));
+  } else if (!house.units.includes(name)) {
+    house.units = [...house.units, name];
+  }
+  house.units = Array.from(new Set(house.units));
+  saveHouse(house);
+  return name;
+}
+
+export function replaceUnit(sourceUnit: string, targetUnit: string): void {
+  if (!sourceUnit || !targetUnit || sourceUnit === targetUnit) return;
+  const house = currentHouse();
+  house.items = house.items.map((item) => (item.unit === sourceUnit ? { ...item, unit: targetUnit } : item));
+  house.units = house.units.filter((unit) => unit !== sourceUnit);
+  if (!house.units.includes(targetUnit)) house.units = [...house.units, targetUnit];
+  saveHouse(house);
+}
+
+export function deleteUnit(unit: string, replacementUnit?: string): boolean {
+  const house = currentHouse();
+  const used = house.items.some((item) => item.unit === unit);
+  if (used && !replacementUnit) return false;
+  if (used && replacementUnit) {
+    replaceUnit(unit, replacementUnit);
+    return true;
+  }
+  house.units = house.units.filter((entry) => entry !== unit);
+  saveHouse(house);
+  return true;
+}
+
+export function moveUnit(unit: string, direction: "up" | "down"): void {
+  const house = currentHouse();
+  const index = house.units.findIndex((entry) => entry === unit);
+  const nextIndex = direction === "up" ? index - 1 : index + 1;
+  if (index < 0 || nextIndex < 0 || nextIndex >= house.units.length) return;
+  const units = [...house.units];
+  [units[index], units[nextIndex]] = [units[nextIndex], units[index]];
+  house.units = units;
+  saveHouse(house);
+}
+
 export function updateHouseName(name: string): void {
   const house = currentHouse();
   house.name = name;
@@ -376,22 +837,63 @@ export function updateAvatar(avatarUrl: string): void {
   saveHouse(house);
 }
 
-export function switchToNewHouse(): void {
-  const store = loadStore();
+function createEmptyHouseFromSource(source: House, name: string): House {
   const houseId = id("house");
-  const source = currentHouse();
-  const nextHouse: House = {
+  return {
     id: houseId,
-    name: `新房子${store.houses.length + 1}`,
+    name,
     avatarUrl: "",
-    locations: source.locations.map((tag) => ({ ...tag, id: id("loc") })),
+    locations: source.locations.map((tag, index) => ({
+      ...tag,
+      id: id("loc"),
+      color: LOCATION_COLOR_PALETTE[index % LOCATION_COLOR_PALETTE.length]
+    })),
     categories: source.categories.map((tag) => ({ ...tag, id: id("cat") })),
     units: [...source.units],
     items: []
   };
-  store.currentHouseId = houseId;
+}
+
+export function switchToNewHouse(): void {
+  const store = loadStore();
+  const source = currentHouse();
+  const nextHouse = createEmptyHouseFromSource(source, `新房子${store.houses.length + 1}`);
+  store.currentHouseId = nextHouse.id;
   store.houses = [...store.houses, nextHouse];
   saveStore(store);
+}
+
+export function deleteCurrentHouse(): void {
+  const store = loadStore();
+  const current = store.houses.find((house) => house.id === store.currentHouseId) || store.houses[0];
+  if (!current) return;
+
+  const remainingHouses = store.houses.filter((house) => house.id !== current.id);
+  const deletedHouses = [current, ...(store.deletedHouses || [])];
+  if (remainingHouses.length) {
+    store.houses = remainingHouses;
+    store.currentHouseId = remainingHouses[0].id;
+  } else {
+    const nextHouse = createEmptyHouseFromSource(current, "新房子1");
+    store.houses = [nextHouse];
+    store.currentHouseId = nextHouse.id;
+  }
+  store.deletedHouses = deletedHouses;
+  saveStore(store);
+}
+
+export function restoreDeletedHouse(houseId: string): boolean {
+  const store = loadStore();
+  const deletedHouses = store.deletedHouses || [];
+  const target = deletedHouses.find((house) => house.id === houseId);
+  if (!target) return false;
+
+  const restoredHouse = store.houses.some((house) => house.id === target.id) ? cloneHouseAsNew(target) : target;
+  store.houses = [restoredHouse, ...store.houses];
+  store.deletedHouses = deletedHouses.filter((house) => house.id !== houseId);
+  store.currentHouseId = restoredHouse.id;
+  saveStore(store);
+  return true;
 }
 
 export function getAllBillViews(): Array<

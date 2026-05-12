@@ -72,3 +72,7 @@
 - 单位管理
 - 关于我们
 - 第二阶段更智能的周期预测规则
+
+## 数据库设计
+
+MySQL 8 规范化表结构、索引和分页说明见 `database/README.md`，建表脚本见 `database/schema.mysql.sql`。

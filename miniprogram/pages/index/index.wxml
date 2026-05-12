@@ -80,9 +80,6 @@
     </view>
   </view>
 
-  <view wx:if="{{guideVisible}}" class="guide-bubble location-guide">长按格子可编辑名称</view>
-  <view wx:if="{{guideVisible}}" class="guide-bubble item-guide">长按物品可删除</view>
-
   <view class="bottom-tabbar">
     <view class="tab-item active" bindtap="goHome">
       <image class="tab-img" src="/assets/tab-home-active.png" mode="aspectFit"></image>
@@ -100,6 +97,10 @@
       <image class="tab-img" src="/assets/tab-bill.png" mode="aspectFit"></image>
       <text>账单</text>
     </view>
+    <view class="tab-item" bindtap="goAccounting">
+      <image class="tab-img" src="/assets/tab-accounting.png" mode="aspectFit"></image>
+      <text>记账</text>
+    </view>
     <view class="tab-item" bindtap="goProfile">
       <image class="tab-img" src="/assets/tab-profile.png" mode="aspectFit"></image>
       <text>我的</text>
@@ -116,11 +117,17 @@
     </view>
   </view>
 
-  <view wx:if="{{guideVisible}}" class="guide-mask">
-    <view class="guide-card">
-      <view class="guide-step">新手教程 {{guideStepText}} / 9</view>
-      <view class="guide-text">{{guideText}}</view>
-      <button class="confirm-button green-button" bindtap="nextGuide">下一步</button>
-    </view>
-  </view>
+  <onboarding-overlay
+    visible="{{onboarding.visible}}"
+    target="{{onboarding.target}}"
+    step-text="{{onboarding.stepText}}"
+    title="{{onboarding.title}}"
+    text="{{onboarding.text}}"
+    primary-text="{{onboarding.primaryText}}"
+    secondary-text="{{onboarding.secondaryText}}"
+    show-secondary="{{onboarding.showSecondary}}"
+    finish-mode="{{onboarding.finishMode}}"
+    bind:primary="onOnboardingPrimary"
+    bind:secondary="onOnboardingSecondary"
+  />
 </view>

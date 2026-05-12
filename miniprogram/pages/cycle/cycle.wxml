@@ -32,4 +32,14 @@
       <button bindtap="confirm" class="confirm green-button">确认设置</button>
     </view>
   </view>
+
+  <onboarding-overlay
+    visible="{{hintVisible}}"
+    target="page-hint"
+    title="周期来自最近两次购买"
+    text="程序会用上上次和上次购买时间估算购买周期，再结合平台默认送达时间，给出下一次建议购买日期。"
+    primary-text="知道了"
+    show-secondary="{{false}}"
+    bind:primary="closeHint"
+  />
 </view>

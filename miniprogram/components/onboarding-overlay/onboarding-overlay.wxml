@@ -1,0 +1,12 @@
+<view wx:if="{{visible}}" class="onboarding-mask target-{{target}}" catchtouchmove="noop">
+  <view wx:if="{{target !== 'center'}}" class="onboarding-highlight"></view>
+  <view class="onboarding-card panel" catchtap="noop">
+    <view wx:if="{{stepText}}" class="onboarding-step">{{stepText}}</view>
+    <view class="onboarding-title">{{title}}</view>
+    <view class="onboarding-text">{{text}}</view>
+    <view class="onboarding-actions {{finishMode ? 'finish-actions' : ''}} {{showSecondary ? '' : 'single-action'}}">
+      <button wx:if="{{showSecondary}}" class="secondary-button" bindtap="onSecondaryTap">{{secondaryText}}</button>
+      <button class="primary-button green-button" bindtap="onPrimaryTap">{{primaryText}}</button>
+    </view>
+  </view>
+</view>

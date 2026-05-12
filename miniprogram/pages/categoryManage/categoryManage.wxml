@@ -1,0 +1,23 @@
+<view class="page manage-page">
+  <view class="page-header">
+    <view class="back-icon" bindtap="goBack">‹</view>
+    <text>分类管理</text>
+  </view>
+
+  <button class="add-action green-button" bindtap="addCategory">新增分类</button>
+
+  <view wx:for="{{categories}}" wx:key="id" class="manage-row panel">
+    <view class="row-main">
+      <text class="row-name">{{item.name}}</text>
+      <text class="row-meta">{{item.count}} 个物品</text>
+    </view>
+    <view class="row-actions">
+      <button data-id="{{item.id}}" data-direction="up" bindtap="moveCategory">上移</button>
+      <button data-id="{{item.id}}" data-direction="down" bindtap="moveCategory">下移</button>
+      <button data-id="{{item.id}}" data-name="{{item.name}}" bindtap="editCategory">改名</button>
+      <button class="danger-text" data-id="{{item.id}}" data-name="{{item.name}}" data-count="{{item.count}}" bindtap="removeCategory">删除</button>
+    </view>
+  </view>
+
+  <view class="notice panel">删除已使用分类时，需要选择迁移到其他分类，物品不会变成无分类。</view>
+</view>

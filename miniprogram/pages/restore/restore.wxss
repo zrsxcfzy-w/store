@@ -1,0 +1,123 @@
+.tool-page {
+  background: #fffdf9;
+  padding-bottom: 52rpx;
+}
+
+.action-list {
+  margin-top: 24rpx;
+  display: grid;
+  gap: 16rpx;
+}
+
+.primary-action {
+  height: 78rpx;
+  line-height: 78rpx;
+  border-radius: 16rpx;
+  font-size: 26rpx;
+  font-weight: 800;
+}
+
+.paste-button {
+  background: #ffffff;
+  color: #3f9d5a;
+  border: 2rpx solid #73c486;
+}
+
+.cloud-button {
+  background: #5daee4;
+  color: #ffffff;
+}
+
+.preview-card,
+.notice,
+.backup-row,
+.empty {
+  margin-top: 22rpx;
+  padding: 24rpx;
+}
+
+.section-title {
+  font-size: 30rpx;
+  font-weight: 800;
+  margin-bottom: 14rpx;
+}
+
+.cloud-title {
+  margin-top: 30rpx;
+}
+
+.info-line {
+  color: #555555;
+  font-size: 24rpx;
+  line-height: 1.8;
+}
+
+.restore-actions {
+  margin-top: 20rpx;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16rpx;
+}
+
+.secondary-action,
+.danger-action {
+  height: 72rpx;
+  line-height: 72rpx;
+  border-radius: 14rpx;
+  font-size: 24rpx;
+  font-weight: 800;
+}
+
+.secondary-action {
+  background: #eaf8ee;
+  color: #3f9d5a;
+}
+
+.danger-action {
+  background: #fff0f0;
+  color: #d94444;
+}
+
+.backup-row {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+
+.backup-main {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  gap: 8rpx;
+}
+
+.backup-name {
+  color: #222222;
+  font-size: 27rpx;
+  font-weight: 800;
+}
+
+.backup-meta {
+  color: #777777;
+  font-size: 22rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.delete-cloud {
+  width: 104rpx;
+  height: 58rpx;
+  line-height: 58rpx;
+  border-radius: 12rpx;
+  color: #d94444;
+  background: #fff0f0;
+  font-size: 22rpx;
+}
+
+.empty,
+.notice {
+  color: #666666;
+  font-size: 24rpx;
+  line-height: 1.6;
+}

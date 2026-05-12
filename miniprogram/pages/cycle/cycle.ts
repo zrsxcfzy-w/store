@@ -1,4 +1,4 @@
-import { ItemView, getItem } from "../../services/store";
+import { ItemView, getItem, markOnboardingHintSeen, shouldShowOnboardingHint } from "../../services/store";
 import { formatChineseDate } from "../../utils/date";
 
 Page({
@@ -7,7 +7,8 @@ Page({
     item: null as ItemView | null,
     previousPurchaseDateText: "暂无记录",
     lastPurchaseDateText: "暂无记录",
-    nextSuggestedDateText: "暂无记录"
+    nextSuggestedDateText: "暂无记录",
+    hintVisible: false
   },
 
   onLoad(options: any) {
@@ -23,6 +24,7 @@ Page({
       lastPurchaseDateText: formatChineseDate(item.lastPurchaseDate),
       nextSuggestedDateText: formatChineseDate(item.nextSuggestedDate)
     });
+    if (shouldShowOnboardingHint("cycle")) this.setData({ hintVisible: true });
   },
 
   goBack() {
@@ -31,5 +33,10 @@ Page({
 
   confirm() {
     wx.navigateBack();
+  },
+
+  closeHint() {
+    markOnboardingHintSeen("cycle");
+    this.setData({ hintVisible: false });
   }
 });

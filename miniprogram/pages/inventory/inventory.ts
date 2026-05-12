@@ -1,4 +1,4 @@
-import { ItemView, getItemViews } from "../../services/store";
+import { ItemView, getItemViews, markOnboardingHintSeen, shouldShowOnboardingHint } from "../../services/store";
 
 type StockFilter = "zero" | "nonzero";
 
@@ -16,11 +16,13 @@ function sortByStockAsc(a: ItemView, b: ItemView): number {
 Page({
   data: {
     items: [] as ItemView[],
-    stockFilter: "zero" as StockFilter
+    stockFilter: "zero" as StockFilter,
+    hintVisible: false
   },
 
   onShow() {
     this.refreshItems(this.data.stockFilter);
+    if (shouldShowOnboardingHint("inventory")) this.setData({ hintVisible: true });
   },
 
   refreshItems(stockFilter: StockFilter) {
@@ -48,11 +50,20 @@ Page({
     wx.redirectTo({ url: "/pages/bills/bills" });
   },
 
+  goAccounting() {
+    wx.redirectTo({ url: "/pages/accounting/accounting" });
+  },
+
   goProfile() {
     wx.navigateTo({ url: "/pages/profile/profile" });
   },
 
   goDetail(event: any) {
     wx.navigateTo({ url: `/pages/detail/detail?id=${event.currentTarget.dataset.id}` });
+  },
+
+  closeHint() {
+    markOnboardingHintSeen("inventory");
+    this.setData({ hintVisible: false });
   }
 });

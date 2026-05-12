@@ -6,7 +6,9 @@ import {
   deleteBill,
   deleteBillsByDate,
   deleteBillsByDates,
-  getAllBillViews
+  getAllBillViews,
+  markOnboardingHintSeen,
+  shouldShowOnboardingHint
 } from "../../services/store";
 import { DeliveryPlatform, compareIsoDate, formatDotDate, todayIso } from "../../utils/date";
 
@@ -55,6 +57,7 @@ Page({
     selectedDateMap: {} as Record<string, boolean>,
     selectedDateCount: 0,
     batchDeleteMode: false,
+    allGroupsCollapsed: false,
     items: [] as InventoryItem[],
     itemIndex: 0,
     selectedItemName: "",
@@ -69,7 +72,8 @@ Page({
       quantity: "1"
     },
     formDateText: formatDotDate(todayIso()),
-    requiresPlatformDetail: false
+    requiresPlatformDetail: false,
+    hintVisible: false
   },
 
   onShow() {
@@ -86,8 +90,11 @@ Page({
       items: house.items,
       itemIndex,
       selectedItemName: house.items[itemIndex]?.name || "",
-      billGroups: this.buildBillGroups()
+      collapsedDateMap: {},
+      allGroupsCollapsed: false,
+      billGroups: this.buildBillGroups({})
     });
+    if (shouldShowOnboardingHint("bills")) this.setData({ hintVisible: true });
   },
 
   buildBillGroups(collapsedDateMap?: Record<string, boolean>, selectedDateMap?: Record<string, boolean>): DateBillGroup[] {
@@ -164,6 +171,21 @@ Page({
       [date]: this.data.collapsedDateMap[date] !== true
     };
     this.setData({
+      collapsedDateMap,
+      billGroups: this.buildBillGroups(collapsedDateMap)
+    });
+  },
+
+  toggleAllDateGroups() {
+    const allGroupsCollapsed = !this.data.allGroupsCollapsed;
+    const collapsedDateMap: Record<string, boolean> = {};
+    if (allGroupsCollapsed) {
+      this.data.billGroups.forEach((group) => {
+        collapsedDateMap[group.date] = true;
+      });
+    }
+    this.setData({
+      allGroupsCollapsed,
       collapsedDateMap,
       billGroups: this.buildBillGroups(collapsedDateMap)
     });
@@ -353,7 +375,16 @@ Page({
     wx.redirectTo({ url: "/pages/reminder/reminder" });
   },
 
+  goAccounting() {
+    wx.redirectTo({ url: "/pages/accounting/accounting" });
+  },
+
   goProfile() {
     wx.navigateTo({ url: "/pages/profile/profile" });
+  },
+
+  closeHint() {
+    markOnboardingHintSeen("bills");
+    this.setData({ hintVisible: false });
   }
 });

@@ -82,7 +82,7 @@ button::after {
   border-radius: 22rpx;
   box-shadow: 0 8rpx 22rpx rgba(45, 37, 28, 0.08);
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(6, 1fr);
   z-index: 10;
 }
 
@@ -93,7 +93,7 @@ button::after {
   justify-content: center;
   gap: 4rpx;
   color: #9b9b9b;
-  font-size: 21rpx;
+  font-size: 20rpx;
 }
 
 .tab-icon {
@@ -102,8 +102,8 @@ button::after {
 }
 
 .tab-img {
-  width: 40rpx;
-  height: 40rpx;
+  width: 38rpx;
+  height: 38rpx;
 }
 
 .tab-item.active {

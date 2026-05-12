@@ -1,0 +1,109 @@
+<view class="page accounting-page">
+  <view class="accounting-head">
+    <view class="title-with-icon">
+      <image class="calendar-icon" src="/assets/calendar.png" mode="aspectFit"></image>
+      <view class="page-title">消费日历</view>
+    </view>
+    <button class="add-record-button green-button" bindtap="openRecordModal">添加消费记录</button>
+  </view>
+
+  <view class="mode-row">
+    <view class="mode-item {{viewMode === 'day' ? 'active' : ''}}" data-mode="day" bindtap="setViewMode">日</view>
+    <view class="mode-item {{viewMode === 'week' ? 'active' : ''}}" data-mode="week" bindtap="setViewMode">周</view>
+    <view class="mode-item {{viewMode === 'month' ? 'active' : ''}}" data-mode="month" bindtap="setViewMode">月</view>
+    <view class="mode-item {{viewMode === 'year' ? 'active' : ''}}" data-mode="year" bindtap="setViewMode">年</view>
+  </view>
+
+  <view class="period-row">
+    <view class="period-arrow {{canGoPrevious ? '' : 'disabled'}}" bindtap="goPrevious">‹</view>
+    <picker wx:if="{{viewMode === 'day' || viewMode === 'week'}}" mode="date" fields="month" value="{{selectedMonthValue}}" bindchange="onMonthPick">
+      <view class="period-picker">{{monthTitle}}</view>
+    </picker>
+    <picker wx:else mode="date" fields="year" value="{{selectedYearValue}}" bindchange="onYearPick">
+      <view class="period-picker">{{yearTitle}}</view>
+    </picker>
+    <view class="period-arrow {{canGoNext ? '' : 'disabled'}}" bindtap="goNext">›</view>
+  </view>
+
+  <view wx:if="{{viewMode === 'day'}}" class="calendar-wrap">
+    <view class="weekday-row">
+      <text wx:for="{{weekdays}}" wx:key="*this">{{item}}</text>
+    </view>
+    <view class="day-grid">
+      <view wx:for="{{dayCells}}" wx:key="key" class="day-cell {{item.cellClass}}">
+        <text class="cell-label">{{item.label}}</text>
+        <text class="cell-amount {{item.amountClass}}">{{item.amountText}}</text>
+      </view>
+    </view>
+  </view>
+
+  <view wx:if="{{viewMode === 'week'}}" class="summary-grid week-grid">
+    <view wx:for="{{weekCells}}" wx:key="key" class="summary-cell {{item.cellClass}}">
+      <text class="summary-label">{{item.label}}</text>
+      <text class="summary-amount {{item.amountClass}}">{{item.amountText}}</text>
+    </view>
+  </view>
+
+  <view wx:if="{{viewMode === 'month'}}" class="summary-grid month-grid">
+    <view wx:for="{{monthCells}}" wx:key="key" class="summary-cell {{item.cellClass}}">
+      <text class="summary-label">{{item.label}}</text>
+      <text class="summary-amount {{item.amountClass}}">{{item.amountText}}</text>
+    </view>
+  </view>
+
+  <view wx:if="{{viewMode === 'year'}}" class="summary-grid year-grid">
+    <view wx:for="{{yearCells}}" wx:key="key" class="summary-cell {{item.cellClass}}">
+      <text class="summary-label">{{item.label}}</text>
+      <text class="summary-amount {{item.amountClass}}">{{item.amountText}}</text>
+    </view>
+  </view>
+
+  <view wx:if="{{recordModalVisible}}" class="modal-mask" bindtap="closeRecordModal">
+    <view class="record-modal panel" catchtap="noop">
+      <view class="modal-title">添加购买记录</view>
+      <picker range="{{items}}" range-key="name" value="{{itemIndex}}" bindchange="onItemChange">
+        <view class="field">
+          <text>物品</text>
+          <text>{{selectedItemName}}</text>
+        </view>
+      </picker>
+      <picker mode="date" value="{{form.date}}" bindchange="onDateChange">
+        <view class="field">
+          <text>时间</text>
+          <text>{{formDateText}}</text>
+        </view>
+      </picker>
+      <picker range="{{platforms}}" value="{{platformIndex}}" bindchange="onPlatformChange">
+        <view class="field">
+          <text>平台</text>
+          <text>{{form.platform}}</text>
+        </view>
+      </picker>
+      <view wx:if="{{requiresPlatformDetail}}" class="field">
+        <text>具体地点</text>
+        <input placeholder="例如：比优特" value="{{form.platformDetail}}" bindinput="onPlatformDetailInput" />
+      </view>
+      <view class="field">
+        <text>价格(元)</text>
+        <input type="digit" placeholder="0.00" value="{{form.price}}" bindinput="onPriceInput" />
+      </view>
+      <view class="field">
+        <text>数量</text>
+        <input type="number" placeholder="1" value="{{form.quantity}}" bindinput="onQuantityInput" />
+      </view>
+      <view class="modal-actions">
+        <button class="cancel-button" bindtap="closeRecordModal">取消</button>
+        <button class="submit green-button" bindtap="submitBill">保存</button>
+      </view>
+    </view>
+  </view>
+
+  <view class="bottom-tabbar">
+    <view class="tab-item" bindtap="goHome"><image class="tab-img" src="/assets/tab-home.png" mode="aspectFit"></image><text>首页</text></view>
+    <view class="tab-item" bindtap="goInventory"><image class="tab-img" src="/assets/tab-inventory.png" mode="aspectFit"></image><text>库存</text></view>
+    <view class="tab-item" bindtap="goReminder"><image class="tab-img" src="/assets/tab-reminder.png" mode="aspectFit"></image><text>提醒</text></view>
+    <view class="tab-item" bindtap="goBills"><image class="tab-img" src="/assets/tab-bill.png" mode="aspectFit"></image><text>账单</text></view>
+    <view class="tab-item active"><image class="tab-img" src="/assets/tab-accounting-active.png" mode="aspectFit"></image><text>记账</text></view>
+    <view class="tab-item" bindtap="goProfile"><image class="tab-img" src="/assets/tab-profile.png" mode="aspectFit"></image><text>我的</text></view>
+  </view>
+</view>

@@ -1,0 +1,74 @@
+.about-page {
+  background: #fffdf9;
+  padding-bottom: 52rpx;
+}
+
+.hero {
+  margin-top: 24rpx;
+  padding: 30rpx;
+  display: flex;
+  align-items: center;
+  gap: 22rpx;
+}
+
+.app-mark {
+  width: 96rpx;
+  height: 96rpx;
+  border-radius: 24rpx;
+  background: #62bd7b;
+  color: #ffffff;
+  font-size: 46rpx;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.app-name {
+  display: block;
+  color: #222222;
+  font-size: 34rpx;
+  font-weight: 900;
+}
+
+.app-version {
+  display: block;
+  margin-top: 8rpx;
+  color: #777777;
+  font-size: 24rpx;
+}
+
+.info-card {
+  margin-top: 20rpx;
+  padding: 24rpx;
+  color: #555555;
+  font-size: 25rpx;
+  line-height: 1.65;
+}
+
+.section-title {
+  color: #222222;
+  font-size: 29rpx;
+  font-weight: 800;
+  margin-bottom: 10rpx;
+}
+
+.action-list {
+  margin-top: 26rpx;
+  display: grid;
+  gap: 16rpx;
+}
+
+.primary-action {
+  height: 78rpx;
+  line-height: 78rpx;
+  border-radius: 16rpx;
+  font-size: 26rpx;
+  font-weight: 800;
+}
+
+.feedback-button {
+  background: #ffffff;
+  color: #3f9d5a;
+  border: 2rpx solid #73c486;
+}

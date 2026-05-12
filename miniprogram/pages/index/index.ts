@@ -6,25 +6,40 @@ import {
   currentHouse,
   deleteItem,
   exportShoppingList,
+  finishCoreOnboarding,
   getItemViews,
-  loadStore,
-  setGuideFinished,
-  setManualRead,
+  getOnboarding,
+  setCoreOnboardingStep,
+  skipCoreOnboarding,
   sortItems,
   updateTagName
 } from "../../services/store";
 
-const guideTexts = [
-  "这里显示当前管理的房子名称，名称来自“我的”页面。",
-  "可以在这里搜索物品名称。",
-  "点击这里可以随时查看使用说明。",
-  "点击导出快要购买或库存较少的物品清单。",
-  "长按位置格子可以编辑名称。",
-  "长按分类格子可以编辑名称。",
-  "长按物品卡片可以删除，点击物品卡片可以查看完整信息。",
-  "点击加号可以添加新物品。",
-  "点击“我的”可以设置房子信息。"
-];
+const CORE_STEP_COUNT = 6;
+
+type OnboardingOverlayData = {
+  visible: boolean;
+  target: string;
+  stepText: string;
+  title: string;
+  text: string;
+  primaryText: string;
+  secondaryText: string;
+  showSecondary: boolean;
+  finishMode: boolean;
+};
+
+const hiddenOnboarding: OnboardingOverlayData = {
+  visible: false,
+  target: "center",
+  stepText: "",
+  title: "",
+  text: "",
+  primaryText: "下一步",
+  secondaryText: "跳过",
+  showSecondary: true,
+  finishMode: false
+};
 
 Page({
   data: {
@@ -35,32 +50,20 @@ Page({
     activeLocationId: "",
     activeCategoryId: "",
     manualVisible: false,
-    guideVisible: false,
-    guideStep: 0,
-    guideStepText: 1,
-    guideText: guideTexts[0],
+    onboarding: hiddenOnboarding,
     manualText: [
       "本小程序用于记录家中物品的库存、位置、购买记录和预计采购时间。",
-      "1. 在“我的”页面设置房子名称。",
-      "2. 首页点击“+”添加物品；点击物品卡片查看详情。",
-      "3. 详情页可调整库存，也可进入该物品的购买记录。",
-      "4. 首页和库存页会按库存数量、预计购买时间自动排序。",
-      "5. 预计购买显示“已到期”时，请及时采购。",
-      "6. 在“账单”页或物品购买记录页添加购买记录，填写时间、平台、价格和数量。",
-      "7. 周期页会根据购买记录估算采购周期和建议购买日期。",
-      "8. 长按位置、分类可改名；长按物品卡片可删除物品。",
-      "9. 点击“导出清单”可复制需要采购的物品清单。"
+      "核心流程：添加物品后，记录每次购买；程序会根据购买记录、库存和平台送达时间估算下次采购。",
+      "首页：搜索、按位置/分类筛选、查看物品卡片、导出采购清单。",
+      "详情页：修改物品信息、消耗库存、添加购买记录、查看购买周期。",
+      "提醒页：汇总库存较少或快到采购时间的物品，可一键复制提醒清单。",
+      "我的：管理仓库、分类、位置、单位，并进行数据备份和恢复。"
     ]
   },
 
   onShow() {
     this.refresh();
-    const store = loadStore();
-    if (!store.hasReadManual) {
-      this.setData({ manualVisible: true });
-    } else if (!store.hasFinishedGuide) {
-      this.startGuide();
-    }
+    this.refreshCoreOnboarding();
   },
 
   refresh() {
@@ -91,32 +94,93 @@ Page({
   },
 
   closeManual() {
-    setManualRead();
     this.setData({ manualVisible: false });
-    if (!loadStore().hasFinishedGuide) this.startGuide();
   },
 
-  startGuide() {
-    this.setData({
-      guideVisible: true,
-      guideStep: 0,
-      guideStepText: 1,
-      guideText: guideTexts[0]
-    });
-  },
-
-  nextGuide() {
-    const next = this.data.guideStep + 1;
-    if (next >= guideTexts.length) {
-      setGuideFinished();
-      this.setData({ guideVisible: false });
+  refreshCoreOnboarding() {
+    const state = getOnboarding();
+    if (state.coreFinished || state.skippedCore || state.coreStep > 2) {
+      this.setData({ onboarding: hiddenOnboarding });
       return;
     }
-    this.setData({
-      guideStep: next,
-      guideStepText: next + 1,
-      guideText: guideTexts[next]
-    });
+    this.setData({ onboarding: this.buildHomeOnboarding(state.coreStep) });
+  },
+
+  buildHomeOnboarding(step: number): OnboardingOverlayData {
+    if (!this.data.items.length && step > 0) {
+      return {
+        ...hiddenOnboarding,
+        visible: true,
+        stepText: `新手教程 ${step + 1} / ${CORE_STEP_COUNT}`,
+        title: "先添加一个自己的物品",
+        text: "当前仓库没有物品。点击这里开始添加，保存后就能继续体验库存、账单和提醒。",
+        primaryText: "添加物品",
+        secondaryText: "跳过",
+        finishMode: true
+      };
+    }
+    const steps: OnboardingOverlayData[] = [
+      {
+        ...hiddenOnboarding,
+        visible: true,
+        stepText: `新手教程 1 / ${CORE_STEP_COUNT}`,
+        title: "先用一分钟看懂库存管家",
+        text: "它帮你记住物品放在哪里、还剩多少，并在快用完或快到采购时间时提醒你。",
+        primaryText: "开始看看",
+        secondaryText: "跳过"
+      },
+      {
+        ...hiddenOnboarding,
+        visible: true,
+        target: "home-card",
+        stepText: `新手教程 2 / ${CORE_STEP_COUNT}`,
+        title: "物品卡片就是库存概览",
+        text: "卡片会显示物品图片、剩余库存、购买周期、预计购买时间和所在位置。库存少或已到期会直接标出来。",
+        primaryText: "下一步",
+        secondaryText: "跳过"
+      },
+      {
+        ...hiddenOnboarding,
+        visible: true,
+        target: "home-filter",
+        stepText: `新手教程 3 / ${CORE_STEP_COUNT}`,
+        title: "用搜索、位置和分类快速找东西",
+        text: "上方可以搜索物品名，横向色块按位置筛选，左侧分类按用途筛选。点击加号可以添加新物品。",
+        primaryText: "查看详情",
+        secondaryText: "跳过"
+      }
+    ];
+    return steps[Math.min(step, steps.length - 1)];
+  },
+
+  onOnboardingPrimary() {
+    const step = getOnboarding().coreStep;
+    if (!this.data.items.length && step > 0) {
+      finishCoreOnboarding();
+      this.setData({ onboarding: hiddenOnboarding });
+      wx.navigateTo({ url: "/pages/edit/edit" });
+      return;
+    }
+    const next = step + 1;
+    if (next === 3) {
+      const item = this.data.filteredItems[0] || this.data.items[0];
+      setCoreOnboardingStep(next);
+      this.setData({ onboarding: hiddenOnboarding });
+      if (item) {
+        wx.navigateTo({ url: `/pages/detail/detail?id=${item.id}` });
+      } else {
+        finishCoreOnboarding();
+        wx.navigateTo({ url: "/pages/edit/edit" });
+      }
+      return;
+    }
+    setCoreOnboardingStep(next);
+    this.setData({ onboarding: this.buildHomeOnboarding(next) });
+  },
+
+  onOnboardingSecondary() {
+    skipCoreOnboarding();
+    this.setData({ onboarding: hiddenOnboarding });
   },
 
   exportList() {
@@ -144,6 +208,7 @@ Page({
   goHome() {
     this.setData({ activeLocationId: "", activeCategoryId: "", searchKeyword: "" });
     this.applySearch();
+    this.refreshCoreOnboarding();
   },
 
   goInventory() {
@@ -156,6 +221,10 @@ Page({
 
   goBills() {
     wx.navigateTo({ url: "/pages/bills/bills" });
+  },
+
+  goAccounting() {
+    wx.navigateTo({ url: "/pages/accounting/accounting" });
   },
 
   goDetail(event: any) {

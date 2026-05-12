@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "数据备份",
+  "usingComponents": {
+    "onboarding-overlay": "/components/onboarding-overlay/onboarding-overlay"
+  }
+}

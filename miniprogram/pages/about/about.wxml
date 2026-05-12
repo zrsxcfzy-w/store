@@ -1,0 +1,39 @@
+<view class="page about-page">
+  <view class="page-header">
+    <view class="back-icon" bindtap="goBack">‹</view>
+    <text>关于我们</text>
+  </view>
+
+  <view class="hero panel">
+    <view class="app-mark">库</view>
+    <view>
+      <text class="app-name">家庭库存管理</text>
+      <text class="app-version">Version {{version}}</text>
+    </view>
+  </view>
+
+  <view class="info-card panel">
+    <view class="section-title">应用用途</view>
+    <text>记录家中物品库存、存放位置、购买记录和预计补货时间，帮助快速找到物品并减少重复购买。</text>
+  </view>
+
+  <view class="info-card panel">
+    <view class="section-title">数据存储说明</view>
+    <text>第一版以本机微信小程序缓存为主；云端备份仅在你手动点击备份时生成快照，不会自动同步或覆盖数据。</text>
+  </view>
+
+  <view class="info-card panel">
+    <view class="section-title">备份恢复说明</view>
+    <text>建议在大量录入、换手机或清理微信缓存前先导出本地备份，并手动保存一份云端备份。</text>
+  </view>
+
+  <view class="info-card panel">
+    <view class="section-title">隐私说明</view>
+    <text>库存、账单、位置等数据只用于本小程序的库存管理功能。自定义本地图片跨设备可能无法恢复。</text>
+  </view>
+
+  <view class="action-list">
+    <button class="primary-action green-button" bindtap="reopenGuide">重新查看使用说明</button>
+    <button class="primary-action feedback-button" open-type="feedback">问题反馈</button>
+  </view>
+</view>

@@ -1,0 +1,163 @@
+.onboarding-mask {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  background: rgba(0, 0, 0, 0.46);
+  box-sizing: border-box;
+  padding: 32rpx;
+}
+
+.onboarding-highlight {
+  position: absolute;
+  border-radius: 18rpx;
+  border: 4rpx solid #ffffff;
+  box-shadow: 0 0 0 9999rpx rgba(0, 0, 0, 0.46), 0 10rpx 28rpx rgba(0, 0, 0, 0.2);
+  pointer-events: none;
+}
+
+.onboarding-card {
+  position: absolute;
+  left: 32rpx;
+  right: 32rpx;
+  padding: 30rpx;
+  border-radius: 22rpx;
+  box-sizing: border-box;
+  background: #ffffff;
+  border: 1rpx solid #ececec;
+  box-shadow: 0 10rpx 30rpx rgba(45, 37, 28, 0.14);
+}
+
+.target-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.target-center .onboarding-card {
+  position: static;
+}
+
+.target-home-card .onboarding-highlight {
+  top: 318rpx;
+  left: 140rpx;
+  right: 24rpx;
+  height: 194rpx;
+}
+
+.target-home-card .onboarding-card {
+  top: 536rpx;
+}
+
+.target-home-filter .onboarding-highlight {
+  top: 174rpx;
+  left: 24rpx;
+  right: 24rpx;
+  height: 204rpx;
+}
+
+.target-home-filter .onboarding-card {
+  top: 402rpx;
+}
+
+.target-home-detail .onboarding-highlight {
+  top: 276rpx;
+  left: 24rpx;
+  right: 24rpx;
+  height: 430rpx;
+}
+
+.target-home-detail .onboarding-card {
+  bottom: 142rpx;
+}
+
+.target-detail-stock .onboarding-highlight {
+  top: 470rpx;
+  left: 42rpx;
+  right: 42rpx;
+  height: 164rpx;
+}
+
+.target-detail-stock .onboarding-card {
+  bottom: 62rpx;
+}
+
+.target-reminder-panel .onboarding-highlight {
+  top: 112rpx;
+  left: 24rpx;
+  right: 24rpx;
+  height: 276rpx;
+}
+
+.target-reminder-panel .onboarding-card {
+  top: 420rpx;
+}
+
+.target-page-hint .onboarding-highlight {
+  top: 88rpx;
+  left: 24rpx;
+  right: 24rpx;
+  height: 166rpx;
+}
+
+.target-page-hint .onboarding-card {
+  top: 286rpx;
+}
+
+.onboarding-step {
+  color: #8c8c8c;
+  font-size: 23rpx;
+  margin-bottom: 10rpx;
+}
+
+.onboarding-title {
+  color: #202020;
+  font-size: 32rpx;
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+.onboarding-text {
+  margin-top: 14rpx;
+  color: #4f4f4f;
+  font-size: 27rpx;
+  line-height: 1.55;
+}
+
+.onboarding-actions {
+  margin-top: 28rpx;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16rpx;
+}
+
+.onboarding-actions.finish-actions {
+  grid-template-columns: 1fr 1fr;
+}
+
+.onboarding-actions.single-action {
+  grid-template-columns: 1fr;
+}
+
+.primary-button,
+.secondary-button {
+  height: 76rpx;
+  line-height: 76rpx;
+  border-radius: 16rpx;
+  font-size: 27rpx;
+}
+
+.primary-button {
+  background: linear-gradient(180deg, #70c884 0%, #5fbd78 100%);
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.secondary-button {
+  background: #f3f3f3;
+  color: #555555;
+}
+
+.primary-button::after,
+.secondary-button::after {
+  border: 0;
+}

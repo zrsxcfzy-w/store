@@ -40,6 +40,11 @@
     <button class="house-action-button green-button" bindtap="openSwitchHouseModal">切换到其他仓库</button>
   </view>
 
+  <view class="house-action-row house-recycle-row">
+    <button class="house-action-button house-danger-button" bindtap="deleteHouse">删除此仓库</button>
+    <button class="house-action-button house-secondary-button" bindtap="openDeletedHouseModal">已删除仓库</button>
+  </view>
+
   <view wx:if="{{switchModalVisible}}" class="modal-mask" bindtap="closeSwitchHouseModal">
     <view class="switch-modal panel" catchtap="noop">
       <view class="modal-title">切换到其他仓库</view>
@@ -52,6 +57,22 @@
       <view class="modal-actions">
         <button class="cancel-button" bindtap="closeSwitchHouseModal">取消</button>
         <button class="submit green-button" bindtap="confirmSwitchHouse">确认切换</button>
+      </view>
+    </view>
+  </view>
+
+  <view wx:if="{{deletedModalVisible}}" class="modal-mask" bindtap="closeDeletedHouseModal">
+    <view class="switch-modal panel" catchtap="noop">
+      <view class="modal-title">已删除仓库</view>
+      <picker range="{{deletedHouseNames}}" value="{{deletedHouseIndex}}" bindchange="onDeletedHouseChange">
+        <view class="field">
+          <text>仓库</text>
+          <text>{{selectedDeletedHouseName}}</text>
+        </view>
+      </picker>
+      <view class="modal-actions">
+        <button class="cancel-button" bindtap="closeDeletedHouseModal">取消</button>
+        <button class="submit green-button" bindtap="confirmRestoreDeletedHouse">恢复仓库</button>
       </view>
     </view>
   </view>
@@ -73,9 +94,23 @@
       <image class="tab-img" src="/assets/tab-bill.png" mode="aspectFit"></image>
       <text>账单</text>
     </view>
+    <view class="tab-item" bindtap="goAccounting">
+      <image class="tab-img" src="/assets/tab-accounting.png" mode="aspectFit"></image>
+      <text>记账</text>
+    </view>
     <view class="tab-item active" bindtap="goProfile">
       <image class="tab-img" src="/assets/tab-profile-active.png" mode="aspectFit"></image>
       <text>我的</text>
     </view>
   </view>
+
+  <onboarding-overlay
+    visible="{{hintVisible}}"
+    target="page-hint"
+    title="我的页管理仓库和基础资料"
+    text="这里可以改仓库名称和头像，也能进入分类、位置、单位、备份恢复等管理功能。创建或切换仓库也在这里。"
+    primary-text="知道了"
+    show-secondary="{{false}}"
+    bind:primary="closeHint"
+  />
 </view>

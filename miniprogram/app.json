@@ -4,11 +4,18 @@
     "pages/inventory/inventory",
     "pages/reminder/reminder",
     "pages/bills/bills",
+    "pages/accounting/accounting",
     "pages/edit/edit",
     "pages/detail/detail",
     "pages/bill/bill",
     "pages/cycle/cycle",
-    "pages/profile/profile"
+    "pages/profile/profile",
+    "pages/backup/backup",
+    "pages/restore/restore",
+    "pages/categoryManage/categoryManage",
+    "pages/locationManage/locationManage",
+    "pages/unitManage/unitManage",
+    "pages/about/about"
   ],
   "window": {
     "navigationBarTitleText": "家庭库存管理",

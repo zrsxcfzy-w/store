@@ -1,0 +1,47 @@
+<view class="page tool-page">
+  <view class="page-header">
+    <view class="back-icon" bindtap="goBack">‹</view>
+    <text>数据恢复</text>
+  </view>
+
+  <view class="action-list">
+    <button class="primary-action green-button" bindtap="chooseLocalFile">选择本地备份文件</button>
+    <button class="primary-action paste-button" bindtap="importFromClipboard">从剪贴板读取备份文本</button>
+    <button class="primary-action cloud-button" loading="{{cloudLoading}}" bindtap="loadCloudBackups">刷新云端备份</button>
+  </view>
+
+  <view wx:if="{{previewVisible}}" class="preview-card panel">
+    <view class="section-title">恢复预览</view>
+    <view class="info-line">备份时间：{{preview.createdAtText}}</view>
+    <view class="info-line">当前仓库：{{preview.currentHouseName}}</view>
+    <view class="info-line">仓库：{{preview.houseCount}} 个，物品：{{preview.itemCount}} 个，账单：{{preview.billCount}} 条</view>
+    <view class="restore-actions">
+      <button class="secondary-action" bindtap="restoreAsNewHouse">导入为新仓库</button>
+      <button class="danger-action" bindtap="overwriteCurrentHouse">覆盖当前仓库</button>
+    </view>
+  </view>
+
+  <view class="section-title cloud-title">云端备份</view>
+  <view wx:if="{{!cloudBackups.length}}" class="empty panel">暂无云端备份</view>
+  <view wx:for="{{cloudBackups}}" wx:key="_id" class="backup-row panel">
+    <view class="backup-main" data-id="{{item._id}}" bindtap="previewCloudBackup">
+      <text class="backup-name">{{item.summary.currentHouseName}}</text>
+      <text class="backup-meta">{{item.createdAtText}} · {{item.summary.itemCount}} 个物品 · {{item.summary.billCount}} 条账单</text>
+    </view>
+    <button class="delete-cloud" data-id="{{item._id}}" bindtap="deleteCloudBackup">删除</button>
+  </view>
+
+  <view class="notice panel">
+    覆盖当前仓库前会自动生成一份本地安全备份。导入为新仓库会追加备份中的仓库，不影响现有数据。
+  </view>
+
+  <onboarding-overlay
+    visible="{{hintVisible}}"
+    target="page-hint"
+    title="恢复数据前先看预览"
+    text="导入为新仓库不会影响现有数据；覆盖当前仓库会替换当前仓库内容。覆盖前程序会自动生成一份本地安全备份。"
+    primary-text="知道了"
+    show-secondary="{{false}}"
+    bind:primary="closeHint"
+  />
+</view>

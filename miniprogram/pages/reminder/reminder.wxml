@@ -10,6 +10,21 @@
     <view class="tab-item" bindtap="goInventory"><image class="tab-img" src="/assets/tab-inventory.png" mode="aspectFit"></image><text>库存</text></view>
     <view class="tab-item active"><image class="tab-img" src="/assets/tab-reminder-active.png" mode="aspectFit"></image><text>提醒</text></view>
     <view class="tab-item" bindtap="goBills"><image class="tab-img" src="/assets/tab-bill.png" mode="aspectFit"></image><text>账单</text></view>
+    <view class="tab-item" bindtap="goAccounting"><image class="tab-img" src="/assets/tab-accounting.png" mode="aspectFit"></image><text>记账</text></view>
     <view class="tab-item" bindtap="goProfile"><image class="tab-img" src="/assets/tab-profile.png" mode="aspectFit"></image><text>我的</text></view>
   </view>
+
+  <onboarding-overlay
+    visible="{{onboarding.visible}}"
+    target="{{onboarding.target}}"
+    step-text="{{onboarding.stepText}}"
+    title="{{onboarding.title}}"
+    text="{{onboarding.text}}"
+    primary-text="{{onboarding.primaryText}}"
+    secondary-text="{{onboarding.secondaryText}}"
+    show-secondary="{{onboarding.showSecondary}}"
+    finish-mode="{{onboarding.finishMode}}"
+    bind:primary="onOnboardingPrimary"
+    bind:secondary="onOnboardingSecondary"
+  />
 </view>

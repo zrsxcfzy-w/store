@@ -17,33 +17,38 @@
 .title-actions {
   display: flex;
   align-items: center;
-  gap: 12rpx;
+  gap: 8rpx;
   flex-shrink: 0;
 }
 
 .page-title {
-  font-size: 34rpx;
+  font-size: 32rpx;
   font-weight: 800;
   margin-bottom: 0;
+  flex-shrink: 0;
 }
 
 .add-record-button {
-  width: 224rpx;
+  width: 162rpx;
   height: 58rpx;
   line-height: 58rpx;
   border-radius: 12rpx;
-  font-size: 22rpx;
+  font-size: 20rpx;
   flex-shrink: 0;
 }
 
 .batch-button,
 .danger-button {
-  width: 154rpx;
+  width: 162rpx;
   height: 58rpx;
   line-height: 58rpx;
   border-radius: 12rpx;
-  font-size: 22rpx;
+  font-size: 20rpx;
   flex-shrink: 0;
+}
+
+.fold-all-button {
+  width: 184rpx;
 }
 
 .batch-button {
@@ -79,15 +84,15 @@
 
 .date-group {
   margin-bottom: 34rpx;
-  padding: 18rpx 18rpx 4rpx;
+  padding: 18rpx 14rpx 4rpx;
   box-sizing: border-box;
 }
 
 .date-group-header {
   min-height: 86rpx;
   display: grid;
-  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr) 104rpx;
-  gap: 16rpx;
+  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.24fr) 82rpx;
+  gap: 10rpx;
   align-items: center;
 }
 
@@ -107,10 +112,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 34rpx;
+  font-family: Arial, sans-serif;
+  font-size: 24rpx;
   font-weight: 800;
   line-height: 1;
   flex-shrink: 0;
+  box-sizing: border-box;
 }
 
 .select-box {
@@ -133,7 +140,7 @@
 }
 
 .date-title {
-  font-size: 32rpx;
+  font-size: 28rpx;
   font-weight: 800;
   color: #2d2d2d;
   overflow: hidden;
@@ -143,7 +150,7 @@
 
 .date-summary {
   color: #333333;
-  font-size: 23rpx;
+  font-size: 22rpx;
   font-weight: 700;
   line-height: 1.35;
   display: flex;
@@ -152,14 +159,21 @@
 }
 
 .group-delete-button {
-  width: 104rpx;
-  height: 54rpx;
-  line-height: 54rpx;
+  width: 78rpx;
+  height: 48rpx;
+  line-height: 48rpx;
   border-radius: 12rpx;
-  background: #e64340;
-  color: #ffffff;
+  background: #f06b6b;
+  color: #111111;
   font-size: 22rpx;
-  font-weight: 700;
+  font-weight: 800;
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+.group-delete-button::after {
+  border: 0;
 }
 
 .group-records {
@@ -168,21 +182,21 @@
 
 .bills-page .bill-head,
 .bills-page .record {
-  grid-template-columns: 1.08fr 1.18fr 0.95fr 0.86fr 0.62fr;
-  gap: 8rpx;
+  grid-template-columns: 1.22fr 1.06fr 0.86fr 0.62fr;
+  gap: 10rpx;
 }
 
-.bills-page .bill-head text:nth-child(2) {
+.bills-page .bill-head text:nth-child(1) {
   padding-left: 54rpx;
   box-sizing: border-box;
 }
 
-.bills-page .bill-head text:nth-child(3),
-.bills-page .bill-head text:nth-child(4) {
+.bills-page .bill-head text:nth-child(2),
+.bills-page .bill-head text:nth-child(3) {
   text-align: center;
 }
 
-.bills-page .bill-head text:nth-child(5) {
+.bills-page .bill-head text:nth-child(4) {
   text-align: right;
 }
 

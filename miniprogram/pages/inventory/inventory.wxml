@@ -24,6 +24,17 @@
     <view class="tab-item active"><image class="tab-img" src="/assets/tab-inventory-active.png" mode="aspectFit"></image><text>库存</text></view>
     <view class="tab-item" bindtap="goReminder"><image class="tab-img" src="/assets/tab-reminder.png" mode="aspectFit"></image><text>提醒</text></view>
     <view class="tab-item" bindtap="goBills"><image class="tab-img" src="/assets/tab-bill.png" mode="aspectFit"></image><text>账单</text></view>
+    <view class="tab-item" bindtap="goAccounting"><image class="tab-img" src="/assets/tab-accounting.png" mode="aspectFit"></image><text>记账</text></view>
     <view class="tab-item" bindtap="goProfile"><image class="tab-img" src="/assets/tab-profile.png" mode="aspectFit"></image><text>我的</text></view>
   </view>
+
+  <onboarding-overlay
+    visible="{{hintVisible}}"
+    target="page-hint"
+    title="库存页用来快速排查缺货"
+    text="这里把库存为 0 和库存不为 0 的物品分开看。缺货物品按名称排，非缺货物品会优先显示库存更少的。"
+    primary-text="知道了"
+    show-secondary="{{false}}"
+    bind:primary="closeHint"
+  />
 </view>

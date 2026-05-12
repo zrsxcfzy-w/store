@@ -1,0 +1,23 @@
+<view class="page manage-page">
+  <view class="page-header">
+    <view class="back-icon" bindtap="goBack">‹</view>
+    <text>单位管理</text>
+  </view>
+
+  <button class="add-action green-button" bindtap="addUnit">新增单位</button>
+
+  <view wx:for="{{units}}" wx:key="name" class="manage-row panel">
+    <view class="row-main">
+      <text class="row-name">{{item.name}}</text>
+      <text class="row-meta">{{item.count}} 个物品</text>
+    </view>
+    <view class="row-actions">
+      <button data-name="{{item.name}}" data-direction="up" bindtap="moveUnit">上移</button>
+      <button data-name="{{item.name}}" data-direction="down" bindtap="moveUnit">下移</button>
+      <button data-name="{{item.name}}" bindtap="editUnit">改名</button>
+      <button class="danger-text" data-name="{{item.name}}" data-count="{{item.count}}" bindtap="removeUnit">删除</button>
+    </view>
+  </view>
+
+  <view class="notice panel">重命名单位会同步更新关联物品。删除已使用单位时，需要选择替换单位。</view>
+</view>

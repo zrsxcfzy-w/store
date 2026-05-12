@@ -1,3 +1,6 @@
 {
-  "navigationBarTitleText": "提醒"
+  "navigationBarTitleText": "提醒",
+  "usingComponents": {
+    "onboarding-overlay": "/components/onboarding-overlay/onboarding-overlay"
+  }
 }
