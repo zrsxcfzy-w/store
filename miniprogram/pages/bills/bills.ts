@@ -46,6 +46,26 @@ function splitDetailText(text: string): string[] {
     .filter(Boolean);
 }
 
+function formatDetailText(locationName: string, detail: string[] = []): string {
+  if (locationName === "其他") return detail.filter(Boolean).join(" > ");
+  return [locationName, ...detail].filter(Boolean).join(" > ");
+}
+
+function parseDetailText(text: string, locationName: string): string[] {
+  const parts = splitDetailText(text);
+  if (locationName !== "其他" && parts[0] === locationName) return parts.slice(1);
+  return parts;
+}
+
+function defaultDetailText(locationName: string): string {
+  return locationName === "其他" ? "" : locationName;
+}
+
+function nextDetailText(locationName: string, previousLocationName: string, currentText: string): string {
+  const detail = parseDetailText(currentText, previousLocationName);
+  return formatDetailText(locationName, detail);
+}
+
 type BillRecordView = BillView & {
   displayDate: string;
   displayPlatform: string;
@@ -190,9 +210,16 @@ Page({
   },
 
   openRecordModal() {
-    this.setData({
+    const stockEntryMode = this.data.items.length ? this.data.stockEntryMode : "new";
+    const updates: Record<string, any> = {
       recordModalVisible: true,
-      stockEntryMode: this.data.items.length ? this.data.stockEntryMode : "new"
+      stockEntryMode
+    };
+    if (stockEntryMode === "new" && !String(this.data.form.locationDetailText || "").trim()) {
+      updates["form.locationDetailText"] = defaultDetailText(this.data.locationName);
+    }
+    this.setData({
+      ...updates
     });
   },
 
@@ -319,7 +346,11 @@ Page({
   setPurchaseMode(event: any) {
     const purchaseMode = event.currentTarget.dataset.mode as PurchaseMode;
     if (!purchaseMode) return;
-    this.setData({ purchaseMode });
+    const updates: Record<string, any> = { purchaseMode };
+    if (purchaseMode === "stock" && this.data.stockEntryMode === "new" && !String(this.data.form.locationDetailText || "").trim()) {
+      updates["form.locationDetailText"] = defaultDetailText(this.data.locationName);
+    }
+    this.setData(updates);
   },
 
   setStockEntryMode(event: any) {
@@ -329,7 +360,11 @@ Page({
       wx.showToast({ title: "暂无库存物品", icon: "none" });
       return;
     }
-    this.setData({ stockEntryMode });
+    const updates: Record<string, any> = { stockEntryMode };
+    if (stockEntryMode === "new" && !String(this.data.form.locationDetailText || "").trim()) {
+      updates["form.locationDetailText"] = defaultDetailText(this.data.locationName);
+    }
+    this.setData(updates);
   },
 
   onItemChange(event: any) {
@@ -357,9 +392,11 @@ Page({
 
   onLocationChange(event: any) {
     const locationIndex = Number(event.detail.value);
+    const locationName = this.data.locations[locationIndex]?.name || "";
     this.setData({
       locationIndex,
-      locationName: this.data.locations[locationIndex]?.name || ""
+      locationName,
+      "form.locationDetailText": nextDetailText(locationName, this.data.locationName, this.data.form.locationDetailText)
     });
   },
 
@@ -470,7 +507,7 @@ Page({
         locationId: this.data.locations[this.data.locationIndex]?.id || "",
         categoryId: this.data.categories[this.data.categoryIndex]?.id || "",
         unit: this.data.unitName || "件",
-        locationDetail: splitDetailText(this.data.form.locationDetailText),
+        locationDetail: parseDetailText(this.data.form.locationDetailText, this.data.locationName),
         manualConsumption: 0,
         bills: []
       });

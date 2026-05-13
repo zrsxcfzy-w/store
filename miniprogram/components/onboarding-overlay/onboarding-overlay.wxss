@@ -161,3 +161,77 @@
 .secondary-button::after {
   border: 0;
 }
+
+.variant-guide {
+  padding: 0;
+  background: transparent;
+}
+
+.variant-guide.target-center {
+  padding: 32rpx;
+  background: rgba(0, 0, 0, 0.58);
+}
+
+.variant-guide .onboarding-highlight {
+  border-radius: 18rpx;
+  border: 4rpx solid #ffffff;
+  background: rgba(255, 255, 255, 0.04);
+  box-shadow: 0 0 0 9999rpx rgba(0, 0, 0, 0.58), 0 0 0 8rpx rgba(116, 77, 255, 0.18), 0 10rpx 28rpx rgba(0, 0, 0, 0.24);
+}
+
+.variant-guide .onboarding-card {
+  left: 56rpx;
+  right: 56rpx;
+  padding: 28rpx;
+  border-radius: 14rpx;
+  border: 0;
+  background: #7047f5;
+  color: #ffffff;
+  box-shadow: 0 12rpx 34rpx rgba(28, 20, 82, 0.28);
+}
+
+.variant-guide.target-center .onboarding-card {
+  position: static;
+}
+
+.variant-guide .onboarding-step {
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 22rpx;
+}
+
+.variant-guide .onboarding-title {
+  color: #ffffff;
+  font-size: 31rpx;
+  font-weight: 800;
+}
+
+.variant-guide .onboarding-text {
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 26rpx;
+  line-height: 1.55;
+}
+
+.variant-guide .onboarding-actions {
+  margin-top: 24rpx;
+  grid-template-columns: 1fr 1fr;
+}
+
+.variant-guide .primary-button,
+.variant-guide .secondary-button {
+  height: 68rpx;
+  line-height: 68rpx;
+  border-radius: 8rpx;
+  font-size: 26rpx;
+}
+
+.variant-guide .primary-button {
+  background: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+  border: 2rpx solid rgba(255, 255, 255, 0.86);
+}
+
+.variant-guide .secondary-button {
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.92);
+  border: 2rpx solid rgba(255, 255, 255, 0.34);
+}

@@ -357,13 +357,53 @@
 }
 
 .manual-body {
+  height: 58vh;
   max-height: 58vh;
+  padding-right: 4rpx;
+}
+
+.manual-section {
+  margin-bottom: 24rpx;
+}
+
+.manual-section:last-child {
+  margin-bottom: 0;
+}
+
+.manual-section-title {
+  margin-bottom: 10rpx;
+  color: #2d2d2d;
+  font-size: 28rpx;
+  font-weight: 800;
+  line-height: 1.35;
 }
 
 .manual-line {
-  line-height: 1.7;
-  margin-bottom: 14rpx;
+  display: flex;
+  align-items: flex-start;
+  gap: 10rpx;
+  line-height: 1.6;
+  margin-bottom: 10rpx;
   color: #4a4a4a;
+  font-size: 25rpx;
+}
+
+.manual-line:last-child {
+  margin-bottom: 0;
+}
+
+.manual-dot {
+  width: 9rpx;
+  height: 9rpx;
+  margin-top: 16rpx;
+  border-radius: 50%;
+  background: #62bd7b;
+  flex-shrink: 0;
+}
+
+.manual-line-text {
+  flex: 1;
+  min-width: 0;
 }
 
 .confirm-button {

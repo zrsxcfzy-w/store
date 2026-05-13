@@ -5,8 +5,8 @@
       <view class="house-copy">
         <text class="house-name">关于 {{house.name}}</text>
         <view class="top-actions">
-          <button class="tool-button" bindtap="openManual"><text class="mini-icon">▣</text> 查看使用说明</button>
-          <button class="tool-button" bindtap="exportList"><text class="mini-icon">⇩</text> 导出清单</button>
+          <button class="tool-button guide-manual-button" bindtap="openManual"><text class="mini-icon">▣</text> 查看使用说明</button>
+          <button class="tool-button guide-export-button" bindtap="exportList"><text class="mini-icon">⇩</text> 导出清单</button>
         </view>
       </view>
     </view>
@@ -19,7 +19,7 @@
 
   <view class="layout">
     <view class="location-row">
-      <view class="location-cell item-cell {{activeLocationId || activeCategoryId ? '' : 'active'}}" bindtap="clearFilters">物品</view>
+      <view class="location-cell item-cell {{activeLocationId || activeCategoryId ? '' : 'active'}}" bindtap="clearFilters">全部物品</view>
       <view
         wx:for="{{house.locations}}"
         wx:key="id"
@@ -47,7 +47,7 @@
         >
           {{item.name}}
         </view>
-        <button class="add-button" bindtap="goEdit">+</button>
+        <button class="add-button guide-add-button" bindtap="goEdit">+</button>
       </view>
 
       <scroll-view scroll-y class="item-list">
@@ -101,7 +101,7 @@
       <image class="tab-img" src="/assets/tab-accounting.png" mode="aspectFit"></image>
       <text>记账</text>
     </view>
-    <view class="tab-item" bindtap="goProfile">
+    <view class="tab-item guide-profile-tab" bindtap="goProfile">
       <image class="tab-img" src="/assets/tab-profile.png" mode="aspectFit"></image>
       <text>我的</text>
     </view>
@@ -111,7 +111,13 @@
     <view class="manual-panel">
       <view class="manual-title">家庭库存管理使用说明</view>
       <scroll-view scroll-y class="manual-body">
-        <view wx:for="{{manualText}}" wx:key="*this" class="manual-line">{{item}}</view>
+        <view wx:for="{{manualSections}}" wx:for-item="section" wx:key="title" class="manual-section">
+          <view class="manual-section-title">{{section.title}}</view>
+          <view wx:for="{{section.items}}" wx:for-item="line" wx:key="*this" class="manual-line">
+            <view class="manual-dot"></view>
+            <text class="manual-line-text">{{line}}</text>
+          </view>
+        </view>
       </scroll-view>
       <button class="confirm-button" bindtap="closeManual">我知道了</button>
     </view>
@@ -120,6 +126,7 @@
   <onboarding-overlay
     visible="{{onboarding.visible}}"
     target="{{onboarding.target}}"
+    variant="{{onboarding.variant}}"
     step-text="{{onboarding.stepText}}"
     title="{{onboarding.title}}"
     text="{{onboarding.text}}"
@@ -127,6 +134,8 @@
     secondary-text="{{onboarding.secondaryText}}"
     show-secondary="{{onboarding.showSecondary}}"
     finish-mode="{{onboarding.finishMode}}"
+    highlight-style="{{onboarding.highlightStyle}}"
+    card-style="{{onboarding.cardStyle}}"
     bind:primary="onOnboardingPrimary"
     bind:secondary="onOnboardingSecondary"
   />

@@ -28,6 +28,9 @@
   border-radius: 12rpx;
   font-size: 20rpx;
   min-width: 0;
+  border: 2rpx solid #ffffff;
+  box-shadow: 0 0 0 2rpx #4fac67;
+  box-sizing: border-box;
 }
 
 .batch-button {
@@ -37,6 +40,9 @@
   border-radius: 12rpx;
   font-size: 20rpx;
   min-width: 0;
+  border: 2rpx solid #ffffff;
+  box-shadow: 0 0 0 2rpx #4fac67;
+  box-sizing: border-box;
 }
 
 .danger-button {
@@ -53,8 +59,8 @@
 }
 
 .batch-button {
-  background: #f0f0f0;
-  color: #333333;
+  background: linear-gradient(180deg, #70c884 0%, #5fbd78 100%);
+  color: #ffffff;
   font-weight: 700;
 }
 
@@ -92,7 +98,7 @@
 .date-group-header {
   min-height: 92rpx;
   display: grid;
-  grid-template-columns: minmax(0, 174rpx) minmax(0, 1fr) 88rpx;
+  grid-template-columns: minmax(0, 250rpx) minmax(0, 1fr) 96rpx;
   gap: 12rpx;
   align-items: center;
 }
@@ -141,11 +147,10 @@
 }
 
 .date-title {
-  font-size: 28rpx;
+  font-size: 24rpx;
   font-weight: 800;
   color: #2d2d2d;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  overflow: visible;
   white-space: nowrap;
 }
 
@@ -161,11 +166,11 @@
 }
 
 .group-delete-button {
-  width: 88rpx;
+  width: 96rpx;
   height: 52rpx;
   line-height: 52rpx;
   border-radius: 12rpx;
-  background: #f2f2f2;
+  background: #ff4d4f;
   color: #111111;
   font-size: 22rpx;
   font-weight: 800;
@@ -196,6 +201,10 @@
 .bills-page .bill-head text:nth-child(2),
 .bills-page .bill-head text:nth-child(3) {
   text-align: center;
+}
+
+.bills-page .bill-head text:nth-child(2) {
+  padding-left: 0;
 }
 
 .bills-page .bill-head text:nth-child(4) {

@@ -24,24 +24,7 @@ Page({
   },
 
   refreshCoreOnboarding() {
-    const state = getOnboarding();
-    if (state.coreFinished || state.skippedCore || state.coreStep !== 5) {
-      this.setData({ onboarding: hiddenOnboarding });
-      return;
-    }
-    this.setData({
-      onboarding: {
-        ...hiddenOnboarding,
-        visible: true,
-        target: "reminder-panel",
-        stepText: "新手教程 6 / 6",
-        title: "提醒页汇总需要采购的物品",
-        text: "库存很少、已到期或快到建议购买日期的物品会出现在这里。复制提醒清单后，可以直接发给自己或家人。",
-        primaryText: "添加自己的物品",
-        secondaryText: "先自己看看",
-        finishMode: true
-      }
-    });
+    this.setData({ onboarding: hiddenOnboarding });
   },
 
   copyReminder() {

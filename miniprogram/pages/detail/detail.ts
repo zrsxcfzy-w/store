@@ -91,12 +91,7 @@ Page({
   },
 
   refreshCoreOnboarding() {
-    const state = getOnboarding();
-    if (state.coreFinished || state.skippedCore || state.coreStep < 3 || state.coreStep > 4) {
-      this.setData({ onboarding: hiddenOnboarding });
-      return;
-    }
-    this.setData({ onboarding: this.buildDetailOnboarding(state.coreStep) });
+    this.setData({ onboarding: hiddenOnboarding });
   },
 
   buildDetailOnboarding(step: number): OnboardingOverlayData {

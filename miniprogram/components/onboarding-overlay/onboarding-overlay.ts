@@ -8,6 +8,10 @@ Component({
       type: String,
       value: "center"
     },
+    variant: {
+      type: String,
+      value: "default"
+    },
     stepText: {
       type: String,
       value: ""
@@ -35,6 +39,14 @@ Component({
     finishMode: {
       type: Boolean,
       value: false
+    },
+    highlightStyle: {
+      type: String,
+      value: ""
+    },
+    cardStyle: {
+      type: String,
+      value: ""
     }
   },
 

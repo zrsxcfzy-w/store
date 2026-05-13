@@ -1,6 +1,6 @@
-<view wx:if="{{visible}}" class="onboarding-mask target-{{target}}" catchtouchmove="noop">
-  <view wx:if="{{target !== 'center'}}" class="onboarding-highlight"></view>
-  <view class="onboarding-card panel" catchtap="noop">
+<view wx:if="{{visible}}" class="onboarding-mask target-{{target}} variant-{{variant}}" catchtouchmove="noop">
+  <view wx:if="{{target !== 'center'}}" class="onboarding-highlight" style="{{highlightStyle}}"></view>
+  <view class="onboarding-card panel" style="{{cardStyle}}" catchtap="noop">
     <view wx:if="{{stepText}}" class="onboarding-step">{{stepText}}</view>
     <view class="onboarding-title">{{title}}</view>
     <view class="onboarding-text">{{text}}</view>
