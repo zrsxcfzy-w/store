@@ -1,10 +1,9 @@
 <view class="page bills-page">
   <view class="title-row">
-    <view class="page-title">账单</view>
     <view class="title-actions">
       <button class="add-record-button green-button" bindtap="openRecordModal">添加购买记录</button>
       <button class="batch-button" bindtap="toggleBatchDelete">{{batchDeleteMode ? '取消' : '批量删除'}}</button>
-      <button class="batch-button fold-all-button" bindtap="toggleAllDateGroups">{{allGroupsCollapsed ? '批量展开账单' : '批量折叠账单'}}</button>
+      <button class="batch-button fold-all-button" bindtap="toggleAllDateGroups">{{allGroupsCollapsed ? '全部展开' : '全部折叠'}}</button>
     </view>
   </view>
 
@@ -57,10 +56,56 @@
   <view wx:if="{{recordModalVisible}}" class="modal-mask" bindtap="closeRecordModal">
     <view class="record-modal panel" catchtap="noop">
       <view class="modal-title">添加购买记录</view>
-      <picker range="{{items}}" range-key="name" value="{{itemIndex}}" bindchange="onItemChange">
+      <view class="choice-row">
+        <view class="choice-pill {{purchaseMode === 'stock' ? 'active' : ''}}" data-mode="stock" bindtap="setPurchaseMode">加入库存</view>
+        <view class="choice-pill {{purchaseMode === 'standalone' ? 'active' : ''}}" data-mode="standalone" bindtap="setPurchaseMode">不加入库存</view>
+      </view>
+
+      <view wx:if="{{purchaseMode === 'stock'}}" class="choice-row secondary">
+        <view class="choice-pill {{stockEntryMode === 'existing' ? 'active' : ''}}" data-mode="existing" bindtap="setStockEntryMode">已有物品</view>
+        <view class="choice-pill {{stockEntryMode === 'new' ? 'active' : ''}}" data-mode="new" bindtap="setStockEntryMode">新建物品</view>
+      </view>
+
+      <picker wx:if="{{purchaseMode === 'stock' && stockEntryMode === 'existing'}}" range="{{items}}" range-key="name" value="{{itemIndex}}" bindchange="onItemChange">
         <view class="field">
           <text>物品</text>
-          <text>{{selectedItemName}}</text>
+          <text>{{selectedItemName ? selectedItemName : '暂无库存物品'}}</text>
+        </view>
+      </picker>
+      <view wx:if="{{purchaseMode === 'standalone' || stockEntryMode === 'new'}}" class="field">
+        <text>物品名称</text>
+        <input placeholder="例如：抽纸" value="{{form.itemName}}" bindinput="onItemNameInput" />
+      </view>
+      <view wx:if="{{purchaseMode === 'stock' && stockEntryMode === 'new'}}" class="image-upload" bindtap="chooseImage">
+        <image wx:if="{{form.imageUrl}}" src="{{form.imageUrl}}" mode="aspectFill"></image>
+        <text wx:else>是否上传物品图片</text>
+      </view>
+      <picker wx:if="{{purchaseMode === 'stock' && stockEntryMode === 'new'}}" range="{{locations}}" range-key="name" value="{{locationIndex}}" bindchange="onLocationChange">
+        <view class="field">
+          <text>物品位置</text>
+          <text>{{locationName}}</text>
+        </view>
+      </picker>
+      <picker wx:if="{{purchaseMode === 'stock' && stockEntryMode === 'new'}}" range="{{categories}}" range-key="name" value="{{categoryIndex}}" bindchange="onCategoryChange">
+        <view class="field">
+          <text>物品分类</text>
+          <text>{{categoryName}}</text>
+        </view>
+      </picker>
+      <picker wx:if="{{purchaseMode === 'stock' && stockEntryMode === 'new'}}" range="{{units}}" value="{{unitIndex}}" bindchange="onUnitChange">
+        <view class="field">
+          <text>单位</text>
+          <text>{{unitName}}</text>
+        </view>
+      </picker>
+      <view wx:if="{{purchaseMode === 'stock' && stockEntryMode === 'new'}}" class="field">
+        <text>具体位置</text>
+        <input placeholder="例如：阳台柜 > 第二层" value="{{form.locationDetailText}}" bindinput="onDetailInput" />
+      </view>
+      <picker wx:if="{{purchaseMode === 'standalone'}}" range="{{units}}" value="{{unitIndex}}" bindchange="onUnitChange">
+        <view class="field">
+          <text>单位</text>
+          <text>{{unitName}}</text>
         </view>
       </picker>
       <picker mode="date" value="{{form.date}}" bindchange="onDateChange">

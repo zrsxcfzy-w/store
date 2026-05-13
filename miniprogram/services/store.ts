@@ -52,6 +52,11 @@ export interface BillRecord {
   quantity: number;
 }
 
+export interface StandaloneBillRecord extends BillRecord {
+  itemName: string;
+  unit: string;
+}
+
 export interface InventoryItem {
   id: string;
   houseId: string;
@@ -73,6 +78,7 @@ export interface House {
   categories: CategoryTag[];
   units: string[];
   items: InventoryItem[];
+  standaloneBills?: StandaloneBillRecord[];
 }
 
 export type OnboardingHintKey = "inventory" | "bills" | "profile" | "cycle" | "backup";
@@ -146,11 +152,18 @@ function id(prefix: string): string {
   return `${prefix}_${Date.now()}_${Math.floor(Math.random() * 10000)}`;
 }
 
-function defaultItemImage(name: string): string {
+export function defaultItemImage(name: string): string {
   if (name.includes("抽纸") || name.includes("纸")) return "/assets/item-tissue.png";
   if (name.includes("洗衣液")) return "/assets/item-detergent.png";
   if (name.includes("瓶") || name.includes("沐浴") || name.includes("洗手")) return "/assets/item-bottle.png";
   return "/assets/item-placeholder.png";
+}
+
+function normalizeHouse(house: House): House {
+  return {
+    ...house,
+    standaloneBills: house.standaloneBills || []
+  };
 }
 
 function seedStore(): InventoryStore {
@@ -179,6 +192,7 @@ function seedStore(): InventoryStore {
         locations,
         categories,
         units: ["件", "包", "瓶", "盒", "卷", "袋", "箱", "个", "斤", "kg", "ml", "L"],
+        standaloneBills: [],
         items: [
           {
             id: "item_paper",
@@ -264,11 +278,11 @@ function normalizeStore(store: InventoryStore): InventoryStore {
   const onboardingNormalized = normalizeOnboarding(store);
   const shouldApplyPalette = onboardingNormalized.locationPaletteVersion !== LOCATION_PALETTE_VERSION;
   const houses = shouldApplyPalette
-    ? onboardingNormalized.houses.map(applyLocationPalette)
-    : onboardingNormalized.houses;
+    ? onboardingNormalized.houses.map(applyLocationPalette).map(normalizeHouse)
+    : onboardingNormalized.houses.map(normalizeHouse);
   const deletedHouses = shouldApplyPalette
-    ? (onboardingNormalized.deletedHouses || []).map(applyLocationPalette)
-    : onboardingNormalized.deletedHouses || [];
+    ? (onboardingNormalized.deletedHouses || []).map(applyLocationPalette).map(normalizeHouse)
+    : (onboardingNormalized.deletedHouses || []).map(normalizeHouse);
   const currentHouseId = houses.some((house) => house.id === onboardingNormalized.currentHouseId)
     ? onboardingNormalized.currentHouseId
     : houses[0]?.id || onboardingNormalized.currentHouseId;
@@ -398,7 +412,8 @@ function clone<T>(value: T): T {
 function backupSummary(store: InventoryStore): BackupSummary {
   const itemCount = store.houses.reduce((sum, house) => sum + house.items.length, 0);
   const billCount = store.houses.reduce(
-    (sum, house) => sum + house.items.reduce((itemSum, item) => itemSum + item.bills.length, 0),
+    (sum, house) =>
+      sum + house.items.reduce((itemSum, item) => itemSum + item.bills.length, 0) + (house.standaloneBills || []).length,
     0
   );
   const current = store.houses.find((house) => house.id === store.currentHouseId) || store.houses[0];
@@ -473,7 +488,8 @@ function cloneHouseAsNew(source: House): House {
       locationId: locationIdMap[item.locationId] || locations[0]?.id || "",
       categoryId: categoryIdMap[item.categoryId] || categories[0]?.id || "",
       bills: item.bills.map((bill) => ({ ...bill, id: id("bill") }))
-    }))
+    })),
+    standaloneBills: (source.standaloneBills || []).map((bill) => ({ ...bill, id: id("standalone_bill") }))
   };
 }
 
@@ -625,12 +641,19 @@ export function addBill(itemId: string, bill: Omit<BillRecord, "id">): void {
   saveHouse(house);
 }
 
+export function addStandaloneBill(bill: Omit<StandaloneBillRecord, "id">): void {
+  const house = currentHouse();
+  house.standaloneBills = [{ ...bill, id: id("standalone_bill") }, ...(house.standaloneBills || [])];
+  saveHouse(house);
+}
+
 export function deleteBill(billId: string): void {
   const house = currentHouse();
   house.items = house.items.map((item) => ({
     ...item,
     bills: item.bills.filter((bill) => bill.id !== billId)
   }));
+  house.standaloneBills = (house.standaloneBills || []).filter((bill) => bill.id !== billId);
   saveHouse(house);
 }
 
@@ -642,6 +665,7 @@ export function deleteBills(billIds: string[]): void {
     ...item,
     bills: item.bills.filter((bill) => !ids.has(bill.id))
   }));
+  house.standaloneBills = (house.standaloneBills || []).filter((bill) => !ids.has(bill.id));
   saveHouse(house);
 }
 
@@ -652,6 +676,7 @@ export function deleteBillsByDate(date: string): void {
     ...item,
     bills: item.bills.filter((bill) => bill.date !== date)
   }));
+  house.standaloneBills = (house.standaloneBills || []).filter((bill) => bill.date !== date);
   saveHouse(house);
 }
 
@@ -663,6 +688,7 @@ export function deleteBillsByDates(dates: string[]): void {
     ...item,
     bills: item.bills.filter((bill) => !selectedDates.has(bill.date))
   }));
+  house.standaloneBills = (house.standaloneBills || []).filter((bill) => !selectedDates.has(bill.date));
   saveHouse(house);
 }
 
@@ -850,7 +876,8 @@ function createEmptyHouseFromSource(source: House, name: string): House {
     })),
     categories: source.categories.map((tag) => ({ ...tag, id: id("cat") })),
     units: [...source.units],
-    items: []
+    items: [],
+    standaloneBills: []
   };
 }
 
@@ -896,25 +923,31 @@ export function restoreDeletedHouse(houseId: string): boolean {
   return true;
 }
 
-export function getAllBillViews(): Array<
-  BillRecord & {
-    itemName: string;
-    unit: string;
-    displayDate: string;
-  }
-> {
-  const house = currentHouse();
+export type BillView = BillRecord & {
+  itemName: string;
+  unit: string;
+  displayDate: string;
+  source: "inventory" | "standalone";
+};
 
-  return house.items
-    .flatMap((item) =>
-      item.bills.map((bill) => ({
-        ...bill,
-        itemName: item.name,
-        unit: item.unit,
-        displayDate: formatBillDate(bill.date)
-      }))
-    )
-    .sort(sortBillsByDateDescPriceDesc);
+export function getAllBillViews(): BillView[] {
+  const house = currentHouse();
+  const inventoryBills: BillView[] = house.items.flatMap((item) =>
+    item.bills.map((bill) => ({
+      ...bill,
+      itemName: item.name,
+      unit: item.unit,
+      displayDate: formatBillDate(bill.date),
+      source: "inventory" as const
+    }))
+  );
+  const standaloneBills: BillView[] = (house.standaloneBills || []).map((bill) => ({
+    ...bill,
+    displayDate: formatBillDate(bill.date),
+    source: "standalone" as const
+  }));
+
+  return [...inventoryBills, ...standaloneBills].sort(sortBillsByDateDescPriceDesc);
 }
 
 function getShoppingListItems(): ItemView[] {

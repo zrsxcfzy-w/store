@@ -1,7 +1,19 @@
-import { InventoryItem, addBill, currentHouse, getAllBillViews } from "../../services/store";
+import {
+  CategoryTag,
+  InventoryItem,
+  LocationTag,
+  addBill,
+  addOrUpdateItem,
+  addStandaloneBill,
+  currentHouse,
+  defaultItemImage,
+  getAllBillViews
+} from "../../services/store";
 import { DeliveryPlatform, compareIsoDate, formatDotDate, todayIso } from "../../utils/date";
 
 type CalendarMode = "day" | "week" | "month" | "year";
+type PurchaseMode = "stock" | "standalone";
+type StockEntryMode = "existing" | "new";
 
 type CalendarCell = {
   key: string;
@@ -65,6 +77,13 @@ function amountClass(amount: number): string {
   return amount > 0 ? "spent-amount" : "empty-amount";
 }
 
+function splitDetailText(text: string): string[] {
+  return text
+    .split(/[>＞,，/]/)
+    .map((part: string) => part.trim())
+    .filter(Boolean);
+}
+
 Page({
   data: {
     viewMode: "day" as CalendarMode,
@@ -82,12 +101,26 @@ Page({
     monthCells: [] as CalendarCell[],
     yearCells: [] as CalendarCell[],
     items: [] as InventoryItem[],
+    locations: [] as LocationTag[],
+    categories: [] as CategoryTag[],
+    units: [] as string[],
     itemIndex: 0,
     selectedItemName: "",
+    purchaseMode: "stock" as PurchaseMode,
+    stockEntryMode: "existing" as StockEntryMode,
+    locationIndex: 0,
+    categoryIndex: 0,
+    unitIndex: 0,
+    locationName: "",
+    categoryName: "",
+    unitName: "",
     platforms,
     platformIndex: 0,
     recordModalVisible: false,
     form: {
+      itemName: "",
+      imageUrl: "",
+      locationDetailText: "",
       date: todayIso(),
       platform: "京东" as DeliveryPlatform,
       platformDetail: "",
@@ -110,6 +143,9 @@ Page({
     const house = currentHouse();
     const today = todayIso();
     const itemIndex = Math.min(this.data.itemIndex, Math.max(house.items.length - 1, 0));
+    const locationIndex = Math.min(this.data.locationIndex, Math.max(house.locations.length - 1, 0));
+    const categoryIndex = Math.min(this.data.categoryIndex, Math.max(house.categories.length - 1, 0));
+    const unitIndex = Math.min(this.data.unitIndex, Math.max(house.units.length - 1, 0));
     if (compareIsoDate(this.data.form.date, today) > 0) {
       this.setData({
         "form.date": today,
@@ -118,8 +154,18 @@ Page({
     }
     this.setData({
       items: house.items,
+      locations: house.locations,
+      categories: house.categories,
+      units: house.units,
       itemIndex,
-      selectedItemName: house.items[itemIndex]?.name || ""
+      selectedItemName: house.items[itemIndex]?.name || "",
+      stockEntryMode: house.items.length ? this.data.stockEntryMode : "new",
+      locationIndex,
+      categoryIndex,
+      unitIndex,
+      locationName: house.locations[locationIndex]?.name || "",
+      categoryName: house.categories[categoryIndex]?.name || "",
+      unitName: house.units[unitIndex] || ""
     });
     this.refreshCalendar();
   },
@@ -330,11 +376,10 @@ Page({
   },
 
   openRecordModal() {
-    if (!this.data.items.length) {
-      wx.showToast({ title: "请先添加物品", icon: "none" });
-      return;
-    }
-    this.setData({ recordModalVisible: true });
+    this.setData({
+      recordModalVisible: true,
+      stockEntryMode: this.data.items.length ? this.data.stockEntryMode : "new"
+    });
   },
 
   closeRecordModal() {
@@ -343,12 +388,71 @@ Page({
 
   noop() {},
 
+  setPurchaseMode(event: any) {
+    const purchaseMode = event.currentTarget.dataset.mode as PurchaseMode;
+    if (!purchaseMode) return;
+    this.setData({ purchaseMode });
+  },
+
+  setStockEntryMode(event: any) {
+    const stockEntryMode = event.currentTarget.dataset.mode as StockEntryMode;
+    if (!stockEntryMode) return;
+    if (stockEntryMode === "existing" && !this.data.items.length) {
+      wx.showToast({ title: "暂无库存物品", icon: "none" });
+      return;
+    }
+    this.setData({ stockEntryMode });
+  },
+
   onItemChange(event: any) {
     const itemIndex = Number(event.detail.value);
     this.setData({
       itemIndex,
       selectedItemName: this.data.items[itemIndex]?.name || ""
     });
+  },
+
+  onItemNameInput(event: any) {
+    this.setData({ "form.itemName": event.detail.value });
+  },
+
+  chooseImage() {
+    wx.chooseMedia({
+      count: 1,
+      mediaType: ["image"],
+      sourceType: ["album", "camera"],
+      success: (res: any) => {
+        this.setData({ "form.imageUrl": res.tempFiles[0].tempFilePath });
+      }
+    });
+  },
+
+  onLocationChange(event: any) {
+    const locationIndex = Number(event.detail.value);
+    this.setData({
+      locationIndex,
+      locationName: this.data.locations[locationIndex]?.name || ""
+    });
+  },
+
+  onCategoryChange(event: any) {
+    const categoryIndex = Number(event.detail.value);
+    this.setData({
+      categoryIndex,
+      categoryName: this.data.categories[categoryIndex]?.name || ""
+    });
+  },
+
+  onUnitChange(event: any) {
+    const unitIndex = Number(event.detail.value);
+    this.setData({
+      unitIndex,
+      unitName: this.data.units[unitIndex] || ""
+    });
+  },
+
+  onDetailInput(event: any) {
+    this.setData({ "form.locationDetailText": event.detail.value });
   },
 
   onDateChange(event: any) {
@@ -392,14 +496,9 @@ Page({
   },
 
   submitBill() {
-    const item = this.data.items[this.data.itemIndex];
     const price = Number(this.data.form.price);
     const quantity = Number(this.data.form.quantity || 1);
-    if (!item) {
-      wx.showToast({ title: "请选择物品", icon: "none" });
-      return;
-    }
-    if (!price) {
+    if (!price || price <= 0) {
       wx.showToast({ title: "请填写价格", icon: "none" });
       return;
     }
@@ -412,15 +511,56 @@ Page({
       wx.showToast({ title: "请填写具体地点", icon: "none" });
       return;
     }
-    addBill(item.id, {
+    const bill = {
       date: this.data.form.date,
       platform: this.data.form.platform,
       platformDetail,
       price,
       quantity
-    });
+    };
+
+    if (this.data.purchaseMode === "standalone") {
+      const itemName = String(this.data.form.itemName || "").trim();
+      if (!itemName) {
+        wx.showToast({ title: "请填写物品名称", icon: "none" });
+        return;
+      }
+      addStandaloneBill({
+        ...bill,
+        itemName,
+        unit: this.data.unitName || "件"
+      });
+    } else if (this.data.stockEntryMode === "new") {
+      const itemName = String(this.data.form.itemName || "").trim();
+      if (!itemName) {
+        wx.showToast({ title: "请填写物品名称", icon: "none" });
+        return;
+      }
+      const itemId = addOrUpdateItem({
+        name: itemName,
+        imageUrl: this.data.form.imageUrl || defaultItemImage(itemName),
+        locationId: this.data.locations[this.data.locationIndex]?.id || "",
+        categoryId: this.data.categories[this.data.categoryIndex]?.id || "",
+        unit: this.data.unitName || "件",
+        locationDetail: splitDetailText(this.data.form.locationDetailText),
+        manualConsumption: 0,
+        bills: []
+      });
+      addBill(itemId, bill);
+    } else {
+      const item = this.data.items[this.data.itemIndex];
+      if (!item) {
+        wx.showToast({ title: "请选择物品", icon: "none" });
+        return;
+      }
+      addBill(item.id, bill);
+    }
+
     this.setData({
       recordModalVisible: false,
+      "form.itemName": "",
+      "form.imageUrl": "",
+      "form.locationDetailText": "",
       "form.platformDetail": "",
       "form.price": "",
       "form.quantity": "1"
